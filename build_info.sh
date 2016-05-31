@@ -4,7 +4,8 @@
 ## 
 ##
 
-filepath="../src/build_info.h"
+filepath="$(git rev-parse --show-toplevel)/src/build_info.h"
+#filepath=${filepath////\\}  ## Replace all / to \
 
 ## Header
 echo -e "/**\n * This file was created automatically by script.\n * DO NOT EDIT! \n */\n" > $filepath
