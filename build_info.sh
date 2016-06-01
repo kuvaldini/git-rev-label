@@ -1,7 +1,7 @@
 #!/bin/sh
 
-## ������ ��� ����������� ���� build_info.h
-## 
+## Создаёт или редактирует файл build_info.h
+##
 ##
 
 filepath="$(git rev-parse --show-toplevel)/src/build_info.h"
@@ -16,7 +16,11 @@ long=$(git rev-parse HEAD)
 echo -e "#define BUILD_GIT_LONG   \"$long\"" >> $filepath
 
 [[ $(git status --porcelain) ]] && dirty="dirty" || dirty=""
-echo -e "#define BUILD_GIT_DIRTY  \"${dirty}\"" >> $filepath
+echo -e "#define BUILD_GIT_DIRTY  \"-${dirty}\"" >> $filepath
 
-echo -e "#define BUILD_GIT        BUILD_GIT_SHORT\"-\"BUILD_GIT_DIRTY" >> $filepath
+echo -e "#define BUILD_GIT        BUILD_GIT_SHORT BUILD_GIT_DIRTY" >> $filepath
 echo -e "#define BUILD_GIT_       \"$short-$dirty\"" >> $filepath
+
+## Если репозиторий чистый и сидит на тэге писать тэг.
+tag=$(git tag --list --points-at HEAD)
+echo -e "#define BUILD_GIT_TAG    \"$tag-$dirty\"" >> $filepath
