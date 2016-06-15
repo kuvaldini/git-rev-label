@@ -9,18 +9,18 @@ filepath="$(git rev-parse --show-toplevel)/src/build_info.h"
 temppath="${filepath}~.tmp"
 
 ## Header
-echo -e "/**\n * This file was created automatically by script.\n * DO NOT EDIT! \n */\n" > $temppath
+echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
 
 short=$(git rev-parse --short HEAD)
-echo -e "#define BUILD_GIT_SHORT  \"$short\"" >> $temppath
+echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
 long=$(git rev-parse HEAD)
-echo -e "#define BUILD_GIT_LONG   \"$long\"" >> $temppath
+echo -e "#define BUILD_GIT_LONG     \"$long\"" >> $temppath
 
+## if result is not "" (working tree is not clean) then dirty.
 [[ $(git status --porcelain) ]] && dirty="dirty" || dirty=""
-echo -e "#define BUILD_GIT_DIRTY  \"-${dirty}\"" >> $temppath
-
-echo -e "#define BUILD_GIT        BUILD_GIT_SHORT BUILD_GIT_DIRTY" >> $temppath
-echo -e "#define BUILD_GIT_       \"$short-$dirty\"" >> $temppath
+[[ $dirty ]] && _dirty="-$dirty" || _dirty=""
+echo -e "#define BUILD_GIT_DIRTY    \"$dirty\"" >> $temppath
+echo -e "#define BUILD_GIT_DIRTY_   \"$_dirty\"" >> $temppath
 
 ## Записать тэг.
 tag=$(git tag --list --points-at HEAD)
@@ -29,18 +29,21 @@ if [ $tag ] ; then
     tag=$tag-$dirty
   fi
 fi
-echo -e "#define BUILD_GIT_TAG    \"$tag\"" >> $temppath
+echo -e "#define BUILD_GIT_TAG      \"$tag\"" >> $temppath
 
-## Записать ветку.
+## Записать ветку. 
 branch=$(git branch --list --points-at HEAD | grep "^* .*")
-branch=${branch:2}
+branch=${branch:2}  ## Предполагается результат "* branch", убрать первые 2 символа.
 if [ $branch ] ; then
   if [ $dirty ] ; then
-    branch=$branch-$dirty
+    branch_=$branch-$dirty
   fi
 fi
-echo -e "#define BUILD_GIT_BRANCH    \"$branch\"" >> $temppath
+echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 
+## Результирующие
+echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY" >> $temppath
+echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
 
 # Копировать файл если есть изменения
 if diff $temppath $filepath > /dev/null  ; then
