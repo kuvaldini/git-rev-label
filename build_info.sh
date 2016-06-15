@@ -22,7 +22,7 @@ echo -e "#define BUILD_GIT_DIRTY  \"-${dirty}\"" >> $temppath
 echo -e "#define BUILD_GIT        BUILD_GIT_SHORT BUILD_GIT_DIRTY" >> $temppath
 echo -e "#define BUILD_GIT_       \"$short-$dirty\"" >> $temppath
 
-## Если репозиторий чистый и сидит на тэге писать тэг.
+## Записать тэг.
 tag=$(git tag --list --points-at HEAD)
 if [ $tag ] ; then
   if [ $dirty ] ; then
@@ -31,7 +31,18 @@ if [ $tag ] ; then
 fi
 echo -e "#define BUILD_GIT_TAG    \"$tag\"" >> $temppath
 
-# Копипровать файл если есть изменения
+## Записать ветку.
+branch=$(git branch --list --points-at HEAD | grep "^* .*")
+branch=${branch:2}
+if [ $branch ] ; then
+  if [ $dirty ] ; then
+    branch=$branch-$dirty
+  fi
+fi
+echo -e "#define BUILD_GIT_BRANCH    \"$branch\"" >> $temppath
+
+
+# Копировать файл если есть изменения
 if diff $temppath $filepath > /dev/null  ; then
   echo Nothing to change
 else
