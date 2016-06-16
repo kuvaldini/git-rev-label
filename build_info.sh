@@ -45,11 +45,14 @@ echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY" >> $temppath
 echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
 
-# Копировать файл если есть изменения
+## Копировать файл если есть изменения
 if diff $temppath $filepath > /dev/null  ; then
   echo Nothing to change
 else
   cp $temppath $filepath
 fi
+
+## Сообщить результат в консоль
+echo "$branch($short)$_dirty"
 
 rm $temppath
