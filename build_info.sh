@@ -46,6 +46,7 @@ echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 ## Результирующие
 echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
 echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
+echo -e "#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
 
 ## Копировать файл если есть изменения
 if diff $temppath $filepath > /dev/null  ; then
