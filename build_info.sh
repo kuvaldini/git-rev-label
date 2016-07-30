@@ -13,7 +13,7 @@ echo -e "/**\n * This file was created automatically by script build_info.sh.\n 
 
 short=$(git rev-parse --short HEAD)
 echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
-long=$(git rev-parse HEAD)
+long=$(git rev-parse HEAD)  #git show-ref -h HEAD
 echo -e "#define BUILD_GIT_LONG     \"$long\"" >> $temppath
 
 ## if result is not "" (working tree is not clean) then dirty.
@@ -34,8 +34,9 @@ fi
 echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
-branch=$(git branch --list --points-at HEAD | grep "^* .*")
-branch=${branch:2}  ## Предполагается результат "* branch", убрать первые 2 символа.
+#branch=$(git branch --list --points-at HEAD | grep "^* .*")
+#branch=${branch:2}  ## Предполагается результат "* branch", убрать первые 2 символа.
+branch=$(git name-rev --name-only HEAD)
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
     branch_=$branch-$dirty
