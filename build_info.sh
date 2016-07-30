@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Создаёт или редактирует файл build_info.h
-## Переписывает файл только если что-то изменилось
+## Переписывает файл только если что-то изменилось, благодаря чему модули C, включающие build_info.h не будут перекопилированы.
 
 
 filepath="$(git rev-parse --show-toplevel)/src/build_info.h"
@@ -24,12 +24,14 @@ echo -e "#define BUILD_GIT_DIRTY_   \"$_dirty\"" >> $temppath
 
 ## Записать тэг.
 tag=$(git tag --list --points-at HEAD)
-if [ $tag ] ; then
-  if [ $dirty ] ; then
-    tag=$tag-$dirty
+if [ "$tag" ] ; then
+  if [ "$dirty" ] ; then
+    tag_=$tag
+  else
+    tag_=$tag-$dirty
   fi
 fi
-echo -e "#define BUILD_GIT_TAG      \"$tag\"" >> $temppath
+echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
 branch=$(git branch --list --points-at HEAD | grep "^* .*")
@@ -44,8 +46,13 @@ fi
 echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 
 ## Результирующие
-echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
-echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
+if [ "$tag" ] ; then
+	echo -e "#define BUILD_GIT          BUILD_GIT_TAG\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT_         \"$tag($short)$_dirty\"" >> $temppath
+else
+	echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
+fi
 echo -e "#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
 
 ## Копировать файл если есть изменения
