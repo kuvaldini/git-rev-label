@@ -50,9 +50,11 @@ echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 if [ "$tag" ] ; then
 	echo -e "#define BUILD_GIT          BUILD_GIT_TAG\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
 	echo -e "#define BUILD_GIT_         \"$tag($short)$_dirty\"" >> $temppath
+	echo "$tag($short)$_dirty, branch:$branch"  ## Сообщить результат в консоль
 else
 	echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
 	echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
+	echo "$branch($short)$_dirty"	## Сообщить результат в консоль
 fi
 echo -e "#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
 
@@ -62,8 +64,5 @@ if diff $temppath $filepath > /dev/null  ; then
 else
   cp $temppath $filepath
 fi
-
-## Сообщить результат в консоль
-echo "$branch($short)$_dirty"
 
 rm $temppath
