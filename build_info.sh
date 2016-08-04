@@ -34,9 +34,9 @@ fi
 echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
-#branch=$(git branch --list --points-at HEAD | grep "^* .*")
-#branch=${branch:2}  ## Предполагается результат "* branch", убрать первые 2 символа.
-branch=$(git name-rev --name-only HEAD)
+branch=$(git branch --list --points-at HEAD | grep "^* .*")
+branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
+#branch=$(git name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
     branch_=$branch-$dirty
