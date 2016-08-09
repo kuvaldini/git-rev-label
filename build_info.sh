@@ -3,10 +3,11 @@
 ## Создаёт или редактирует файл build_info.h
 ## Переписывает файл только если что-то изменилось, благодаря чему модули C, включающие build_info.h не будут перекопилированы.
 
-
-filepath="$(git rev-parse --show-toplevel)/src/build_info.h"
+gitRepoPath="$(git rev-parse --show-toplevel)"
+filepath="$gitRepoPath/src/build_info.h"
 #filepath=${filepath////\\}  ## Replace all / to \
-temppath="${filepath}~"
+#temppath="${filepath}~.tmp"
+temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
 
 ## Header
 echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
