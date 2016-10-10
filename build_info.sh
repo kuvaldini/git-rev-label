@@ -1,9 +1,12 @@
 #!/bin/sh
 
 ## Создаёт или редактирует файл build_info.h
-## Переписывает файл только если что-то изменилось, благодаря чему модули C, включающие build_info.h не будут перекопилированы.
+## Переписывает файл только если что-то изменилось, благодаря чему модули C/C++, включающие build_info.h не будут перекопилированы.
 
 gitRepoPath="$(git rev-parse --show-toplevel)"
+#if [ $? ]; then
+#	exit $?
+#fi
 filepath="$gitRepoPath/src/build_info.h"
 #filepath=${filepath////\\}  ## Replace all / to \
 #temppath="${filepath}~.tmp"
@@ -57,7 +60,25 @@ else
 	echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
 	echo "$branch($short)$_dirty"	## Сообщить результат в консоль
 fi
-echo -e "#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
+echo -e "//#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
+echo -e "#define BUILD_INFO         \"Build \"BUILD_DATE_ISO8601\" Git \"BUILD_GIT" >> $temppath
+
+
+## Текущее время в числах
+echo -e "" >> $temppath
+echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temppath
+echo -e "#define BUILD_EPOCH1970_SEC  $(date +%s) " >> $temppath
+echo -e "#define BUILD_DATE           $(date +%F)" >> $temppath
+echo -e "#define BUILD_TIME           $(date +%T)" >> $temppath
+echo -e "#define BUILD_DATE_TIME      $(date +'%F %T')" >> $temppath
+echo -e "#define BUILD_YEAR           $(date +%Y)" >> $temppath
+echo -e "#define BUILD_MONTH          $(date +%m)" >> $temppath
+echo -e "#define BUILD_DAY            $(date +%d)" >> $temppath
+echo -e "#define BUILD_HOUR           $(date +%H)" >> $temppath
+echo -e "#define BUILD_MIN            $(date +%M)" >> $temppath
+echo -e "#define BUILD_SEC            $(date +%S)" >> $temppath
+echo -e "#define BUILD_NANOSEC        $(date +%N)" >> $temppath
+
 
 ## Копировать файл если есть изменения
 if diff $temppath $filepath > /dev/null  ; then
