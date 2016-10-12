@@ -37,9 +37,14 @@ fi
 echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
-branch=$(git branch --list --points-at HEAD | grep "^* .*")
-branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
-#branch=$(git name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.
+## Check detached
+if [ -z "$(git symbolic-ref HEAD -q)" ]; then
+	branch="DETACHED"
+else
+	branch=$(git branch --list --points-at HEAD | grep "^* .*")
+	branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
+	#branch=$(git name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
+fi
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
     branch_=$branch-$dirty
@@ -51,12 +56,12 @@ echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 
 ## Результирующие
 if [ "$tag" ] ; then
-	echo -e "#define BUILD_GIT          BUILD_GIT_TAG\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
-	echo -e "#define BUILD_GIT_         \"$tag($short)$_dirty\"" >> $temppath
+	echo -e "#define BUILD_GIT_         BUILD_GIT_TAG\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT          \"$tag($short)$_dirty\"" >> $temppath
 	echo "$tag($short)$_dirty, branch:$branch"  ## Сообщить результат в консоль
 else
-	echo -e "#define BUILD_GIT          BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
-	echo -e "#define BUILD_GIT_         \"$branch($short)$_dirty\"" >> $temppath
+	echo -e "#define BUILD_GIT_         BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT          \"$branch($short)$_dirty\"" >> $temppath
 	echo "$branch($short)$_dirty"	## Сообщить результат в консоль
 fi
 echo -e "//#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
