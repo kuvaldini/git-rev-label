@@ -73,9 +73,9 @@ echo -e "#define BUILD_INFO         \"Build \"BUILD_DATE_ISO8601\" Git \"BUILD_G
 echo -e "" >> $temppath
 echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temppath
 echo -e "#define BUILD_EPOCH1970_SEC  $(date +%s) " >> $temppath
-echo -e "#define BUILD_DATE           $(date +%F)" >> $temppath
-echo -e "#define BUILD_TIME           $(date +%T)" >> $temppath
-echo -e "#define BUILD_DATE_TIME      $(date +'%F %T')" >> $temppath
+echo -e "#define BUILD_DATE           \"$(date +%F)\"" >> $temppath
+echo -e "#define BUILD_TIME           \"$(date +%T)\"" >> $temppath
+echo -e "#define BUILD_DATE_TIME      \"$(date +'%F %T')\"" >> $temppath
 echo -e "#define BUILD_YEAR           $(date +%Y)" >> $temppath
 echo -e "#define BUILD_MONTH          $(date +%m)" >> $temppath
 echo -e "#define BUILD_DAY            $(date +%d)" >> $temppath
