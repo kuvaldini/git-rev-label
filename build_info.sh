@@ -21,33 +21,37 @@ contains() {
 ## TODO Ignore new submodules. Актуально при возврате на предыдущие коммиты, чтоб не числились как Dirty
 ## TODO Стоит ли писать detached?
 
-scriptName=$(basename ${0})
+scriptName=$(basename "${0}")
 if [[ "$1" == "-h" ]]; then
-	echo -e "Usage $scriptName [GitRepo] [TargetFile] \n" \
+	echo -e "Usage:\n"\
+		 " $scriptName [GitRepo] [TargetFile] \n" \
 		 "  GitRepo     Any path under Git VCS. If not specified, uses current folder \n" \
 		 "  TargetFile  Optional, default is $GitRepoTopLevelPath/src/build_info.h "
-	exit
+	exit 1
 fi
 ## Set GitRepo
 if [[ -n "$1" ]]; then
 	GitRepo=$1
 	if [ ! -d "$GitRepo" ]; then
 		echo "GitRepo $GitRepo is not a directory"
-		exit
+		exit 1
 	fi
 else
 	GitRepo=$(pwd)
 fi
-## Check GitRepo
+## Check if $GitRepo is inside Git repository  ###--is-inside-git-dir
 $(git -C "$GitRepo" rev-parse)
-if [ $? != 0 ]; then echo "GitRepo '$GitRepo' is not valid"  &&  exit; fi
+if [ $? != 0 ]; then 
+	echo "GitRepo \"${GitRepo}\" is not valid"
+	exit 1;
+fi
 
 ## Set TargetFile
 if [ -n "$2" ]; then
 	TargetFile=$2
 else
 	## Default TargetFile. 
-	GitRepoTopLevelPath="$(git -C $GitRepo rev-parse --show-toplevel)"
+	GitRepoTopLevelPath=$(git -C "$GitRepo" rev-parse --show-toplevel)
 	contains "$GitRepoTopLevelPath" "fatal"  &&  \
 			echo "$GitRepoTopLevelPath"  &&  exit
 	TargetFile="$GitRepoTopLevelPath/src/build_info.h"
@@ -65,19 +69,19 @@ temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://un
 ## Header
 echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
 
-short=$(git -C $GitRepo rev-parse --short HEAD)
+short=$(git -C "$GitRepo" rev-parse --short HEAD)
 echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
-long=$(git -C $GitRepo rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
+long=$(git -C "$GitRepo" rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
 echo -e "#define BUILD_GIT_LONG     \"$long\"" >> $temppath
 
 ## if result is not "" (working tree is not clean) then dirty.
-[[ $(git -C $GitRepo status --porcelain) ]] && dirty="dirty" || dirty=""
+[[ $(git -C "$GitRepo" status --porcelain) ]] && dirty="dirty" || dirty=""
 [[ $dirty ]] && _dirty="-$dirty" || _dirty=""
 echo -e "#define BUILD_GIT_DIRTY    \"$dirty\"" >> $temppath
 echo -e "#define BUILD_GIT_DIRTY_   \"$_dirty\"" >> $temppath
 
 ## Записать тэг.
-tag=$(git -C $GitRepo tag --list --points-at HEAD)
+tag=$(git -C "$GitRepo" tag --list --points-at HEAD)
 if [ "$tag" ] ; then
   if [ "$dirty" ] ; then
     tag_=$tag
@@ -89,12 +93,12 @@ echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
 ## Check detached
-if [ -z "$(git -C $GitRepo symbolic-ref HEAD -q)" ]; then
+if [ -z $(git -C "$GitRepo" symbolic-ref HEAD -q) ]; then
 	branch="DETACHED"
 else
-	branch=$(git -C $GitRepo branch --list --points-at HEAD | grep "^* .*")
+	branch=$(git -C "$GitRepo" branch --list --points-at HEAD | grep "^* .*")
 	branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
-	#branch=$(git -C $GitRepo name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
+	#branch=$(git -C "$GitRepo" name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
 fi
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
@@ -136,10 +140,10 @@ echo -e "#define BUILD_NANOSEC        $(date +%N)" >> $temppath
 
 
 ## Копировать файл если есть изменения
-if diff $temppath $TargetFile > /dev/null  ; then
+if diff "$temppath" "$TargetFile" > /dev/null  ; then
   echo Nothing to change
 else
-  cp $temppath $TargetFile
+  cp "$temppath" "$TargetFile"
 fi
 
-rm $temppath
+rm "$temppath"
