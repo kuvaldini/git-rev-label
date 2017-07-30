@@ -66,19 +66,11 @@ fi
 
 temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
 
-## Header
-echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
-
 short=$(git -C "$GitRepo" rev-parse --short HEAD)
-echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
 long=$(git -C "$GitRepo" rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
-echo -e "#define BUILD_GIT_LONG     \"$long\"" >> $temppath
-
-## if result is not "" (working tree is not clean) then dirty.
+count=$(git -C "$GitRepo" rev-list --count HEAD)
 [[ $(git -C "$GitRepo" status --porcelain) ]] && dirty="dirty" || dirty=""
 [[ $dirty ]] && _dirty="-$dirty" || _dirty=""
-echo -e "#define BUILD_GIT_DIRTY    \"$dirty\"" >> $temppath
-echo -e "#define BUILD_GIT_DIRTY_   \"$_dirty\"" >> $temppath
 
 ## Записать тэг.
 tag=$(git -C "$GitRepo" tag --list --points-at HEAD)
@@ -89,7 +81,6 @@ if [ "$tag" ] ; then
     tag_=$tag-$dirty
   fi
 fi
-echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
 
 ## Записать ветку. 
 ## Check detached
@@ -107,17 +98,35 @@ if [ "$branch" ] ; then
     branch_=$branch
   fi
 fi
+
+
+## Header
+echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
+
+echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
+echo -e "#define BUILD_GIT_LONG     \"$long\""  >> $temppath
+echo -e "#define BUILD_GIT_COUNT    \"$count\"" >> $temppath
+
+## if result is not "" (working tree is not clean) then dirty.
+echo -e "#define BUILD_GIT_DIRTY    \"$dirty\""  >> $temppath
+echo -e "#define BUILD_GIT_DIRTY_   \"$_dirty\"" >> $temppath
+
+## Записать тэг.
+echo -e "#define BUILD_GIT_TAG      \"$tag_\"" >> $temppath
+## Записать ветку. 
 echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 
 ## Результирующие
 if [ "$tag" ] ; then
-	echo -e "#define BUILD_GIT_         BUILD_GIT_TAG\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
-	echo -e "#define BUILD_GIT          \"$tag($short)$_dirty\"" >> $temppath
-	echo "$tag($short)$_dirty, branch:$branch"  ## Сообщить результат в консоль
+	build_git="$tag-$count($short)$_dirty"
+	echo -e "#define BUILD_GIT_         BUILD_GIT_TAG \"-\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT          \"$build_git\"" >> $temppath
+	echo "$build_git, branch:$branch"  ## Сообщить результат в консоль
 else
-	echo -e "#define BUILD_GIT_         BUILD_GIT_BRANCH\"(\"BUILD_GIT_SHORT\")\"BUILD_GIT_DIRTY_" >> $temppath
-	echo -e "#define BUILD_GIT          \"$branch($short)$_dirty\"" >> $temppath
-	echo "$branch($short)$_dirty"	## Сообщить результат в консоль
+	build_git="$branch-$count($short)$_dirty"
+	echo -e "#define BUILD_GIT_         BUILD_GIT_BRANCH \"-\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
+	echo -e "#define BUILD_GIT          \"$build_git\"" >> $temppath
+	echo "$build_git"	## Сообщить результат в консоль
 fi
 echo -e "//#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
 echo -e "#define BUILD_INFO         \"Build \"BUILD_DATE_ISO8601\" Git \"BUILD_GIT" >> $temppath
