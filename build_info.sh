@@ -118,13 +118,13 @@ echo -e "#define BUILD_GIT_BRANCH   \"$branch_\"" >> $temppath
 
 ## Результирующие
 if [ "$tag" ] ; then
-	build_git="$tag-$count($short)$_dirty"
-	echo -e "#define BUILD_GIT_         BUILD_GIT_TAG \"-\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
+	build_git="$tag-c$count($short)$_dirty"
+	echo -e "#define BUILD_GIT_         BUILD_GIT_TAG \"-c\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
 	echo -e "#define BUILD_GIT          \"$build_git\"" >> $temppath
 	echo "$build_git, branch:$branch"  ## Сообщить результат в консоль
 else
-	build_git="$branch-$count($short)$_dirty"
-	echo -e "#define BUILD_GIT_         BUILD_GIT_BRANCH \"-\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
+	build_git="$branch-c$count($short)$_dirty"
+	echo -e "#define BUILD_GIT_         BUILD_GIT_BRANCH \"-c\" BUILD_GIT_COUNT \"(\" BUILD_GIT_SHORT \")\" BUILD_GIT_DIRTY_" >> $temppath
 	echo -e "#define BUILD_GIT          \"$build_git\"" >> $temppath
 	echo "$build_git"	## Сообщить результат в консоль
 fi
