@@ -45,3 +45,9 @@ Output `build_info.h` looks like:
 #define BUILD_NANOSEC        623915100
 
 ```
+
+
+## Mirrors
+* https://gitlab.com/kyb/build-info-header
+* https://bitbucket.org/qyw/build_info-generator-git
+
