@@ -7,7 +7,7 @@ Include this header to access build information from code.
 $ ./build_info.sh -h
 Usage:  build_info.sh [GitRepo] [TargetFile]
    GitRepo     Any path under Git VCS. If not specified, uses current folder
-   TargetFile  Optional, default is /src/build_info.h
+   TargetFile  Optional, default is ${GitRepoTopLevelPath}/src/build_info.h
 
 ```
 
