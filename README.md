@@ -26,10 +26,10 @@ Output `build_info.h` looks like:
 #define BUILD_GIT_DIRTY_   "-dirty"
 #define BUILD_GIT_TAG      ""
 #define BUILD_GIT_BRANCH   "config-file-dirty"
-#define BUILD_GIT_         BUILD_GIT_BRANCH"("BUILD_GIT_SHORT")"BUILD_GIT_DIRTY_
+#define BUILD_GIT_         BUILD_GIT_BRANCH "(" BUILD_GIT_SHORT ")" BUILD_GIT_DIRTY_
 #define BUILD_GIT          "config-file(2973efa)-dirty"
 //#define BUILD_INFO         "Build "__DATE__" "__TIME__" Git "BUILD_GIT
-#define BUILD_INFO         "Build "BUILD_DATE_ISO8601" Git "BUILD_GIT
+#define BUILD_INFO         "Build " BUILD_DATE_ISO8601 " Git " BUILD_GIT
 
 #define BUILD_DATE_ISO8601   "2017-05-28T13:40:25+0300"
 #define BUILD_EPOCH1970_SEC  1495968025 
