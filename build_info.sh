@@ -128,7 +128,7 @@ else
 	echo -e "#define BUILD_GIT          \"$build_git\"" >> $temppath
 	echo "$build_git"	## Сообщить результат в консоль
 fi
-echo -e "//#define BUILD_INFO         \"Build \"__DATE__\" \"__TIME__\" Git \"BUILD_GIT" >> $temppath
+echo -e "//#define BUILD_INFO         \"Build \" __DATE__ \" \" __TIME__ \" Git \" BUILD_GIT" >> $temppath
 echo -e "#define BUILD_INFO         \"Build \" BUILD_DATE_ISO8601 \" Git \" BUILD_GIT" >> $temppath
 
 
