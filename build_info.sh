@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+
+## INFO
+## bash is required for operator [[
+
 
 # contains(string, substring)
 #
@@ -69,8 +73,12 @@ temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://un
 short=$(git -C "$GitRepo" rev-parse --short HEAD)
 long=$(git -C "$GitRepo" rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
 count=$(git -C "$GitRepo" rev-list --count HEAD)
-[[ $(git -C "$GitRepo" status --porcelain) ]] && dirty="dirty" || dirty=""
-[[ $dirty ]] && _dirty="-$dirty" || _dirty=""
+
+git diff-index --quiet HEAD --; isDirty=$?
+[[ $isDirty == true ]]  &&   dirty="dirty"  ||   dirty=""
+[[ $isDirty == true ]]  &&  _dirty="-dirty" ||  _dirty=""
+#if [[ -n $(git -C "$GitRepo" status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
+#if [[ -n $dirty ]] ; then _dirty="-$dirty"; else _dirty=""; fi
 
 ## Записать тэг.
 tag=$(git -C "$GitRepo" tag --list --points-at HEAD)
