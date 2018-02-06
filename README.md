@@ -46,6 +46,14 @@ Output `build_info.h` looks like:
 
 ```
 
+### Debug
+The script could be more verbose with non zero `DEBUG_SCRIPT` variable:
+```
+DEBUG_SCRIPT=1  build-info-header/build-info-header.sh  .  ./src/build_info.h
+```
+
+
+
 
 ## Mirrors
 * https://gitlab.com/kyb/build-info-header
