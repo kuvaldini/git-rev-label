@@ -66,6 +66,8 @@ if (( $DEBUG_SCRIPT )); then
 	echo GitRepo: $GitRepo
 	echo GitRepoTopLevelPath: $GitRepoTopLevelPath
 	echo TargetFile: $TargetFile
+else
+	StdErrMod="2>/dev/null"
 fi
 
 temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
@@ -111,7 +113,7 @@ fi
 ## Header
 echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
 
-echo -e "#pragma once\n" > $temppath
+echo -e "#pragma once\n" >> $temppath
 
 echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
 echo -e "#define BUILD_GIT_LONG     \"$long\""  >> $temppath
@@ -141,28 +143,61 @@ fi
 echo -e "//#define BUILD_INFO         \"Build \" __DATE__ \" \" __TIME__ \" Git \" BUILD_GIT" >> $temppath
 echo -e "#define BUILD_INFO         \"Build \" BUILD_DATE_ISO8601 \" Git \" BUILD_GIT" >> $temppath
 
+## Отдельный файл с текущими датой и времемем
+## Separate file with current date and time
+## The output should be like:
+##	```
+##	#define BUILD_DATE_ISO8601   "2018-02-06T18:16:51+02:00"
+##	#define BUILD_EPOCH1970_SEC  1517933811 
+##	#define BUILD_DATE           "2018-02-06"
+##	#define BUILD_TIME           "18:16:51"
+##	#define BUILD_DATE_TIME      "2018-02-06 18:16:51"
+##	#define BUILD_YEAR           2018
+##	#define BUILD_MONTH          02
+##	#define BUILD_DAY            06
+##	#define BUILD_HOUR           18
+##	#define BUILD_MIN            16
+##	#define BUILD_SEC            51
+##	#define BUILD_NANOSEC        135301337 
+##	```
+temp_datetime="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
+epoch1970sec=$(date +%s)
+echo -e "" > $temp_datetime
+echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temp_datetime
+echo -e "#define BUILD_EPOCH1970_SEC  $epoch1970sec " >> $temp_datetime
+echo -e "#define BUILD_DATE           \"$(date +%F)\"" >> $temp_datetime
+echo -e "#define BUILD_TIME           \"$(date +%T)\"" >> $temp_datetime
+echo -e "#define BUILD_DATE_TIME      \"$(date +'%F %T')\"" >> $temp_datetime
+echo -e "#define BUILD_YEAR           $(date +%Y)" >> $temp_datetime
+echo -e "#define BUILD_MONTH          $(date +%m)" >> $temp_datetime
+echo -e "#define BUILD_DAY            $(date +%d)" >> $temp_datetime
+echo -e "#define BUILD_HOUR           $(date +%H)" >> $temp_datetime
+echo -e "#define BUILD_MIN            $(date +%M)" >> $temp_datetime
+echo -e "#define BUILD_SEC            $(date +%S)" >> $temp_datetime
+echo -e "#define BUILD_NANOSEC        $(date +%N)" >> $temp_datetime
 
-## Текущее время в числах
-echo -e "" >> $temppath
-echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temppath
-echo -e "#define BUILD_EPOCH1970_SEC  $(date +%s) " >> $temppath
-echo -e "#define BUILD_DATE           \"$(date +%F)\"" >> $temppath
-echo -e "#define BUILD_TIME           \"$(date +%T)\"" >> $temppath
-echo -e "#define BUILD_DATE_TIME      \"$(date +'%F %T')\"" >> $temppath
-echo -e "#define BUILD_YEAR           $(date +%Y)" >> $temppath
-echo -e "#define BUILD_MONTH          $(date +%m)" >> $temppath
-echo -e "#define BUILD_DAY            $(date +%d)" >> $temppath
-echo -e "#define BUILD_HOUR           $(date +%H)" >> $temppath
-echo -e "#define BUILD_MIN            $(date +%M)" >> $temppath
-echo -e "#define BUILD_SEC            $(date +%S)" >> $temppath
-echo -e "#define BUILD_NANOSEC        $(date +%N)" >> $temppath
+# extract linux epoch timestamp from prev file. `-F` is field-separator, `2>` is stderr redirection.
+epoch1970sec_prev=`grep BUILD_EPOCH1970  $TargetFile  2>/dev/null |  awk -F " " '{print $3}'`
+if (( $DEBUG_SCRIPT )); then  echo =================  $epoch1970sec; fi
+
+## Использовать предыдующие дату и время, если разница во времени меньше 10 минут
+if (( epoch1970sec - epoch1970sec_prev < 600 )); then
+	echo -e "" > $temp_datetime
+	# extract date-time block from prev file
+	awk -v RS="" '/#define BUILD_DATE.*/' $TargetFile  >> $temp_datetime
+fi
+cat $temp_datetime  >>  $temppath
+
+## ToDo  Всё равно обновлять время если файлы были изменены. Например, учитывать вывод `git status`.
 
 
 ## Копировать файл если есть изменения
-if diff "$temppath" "$TargetFile" > /dev/null  ; then
+if diff "$temppath" "$TargetFile" &>/dev/null  ; then
+#if diff "$temppath" "$TargetFile" ; then
   echo Nothing to change
 else
   cp "$temppath" "$TargetFile"
+  echo Written to "$TargetFile"
 fi
 
 rm "$temppath"
