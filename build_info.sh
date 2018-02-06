@@ -178,7 +178,7 @@ echo -e "#define BUILD_NANOSEC        $(date +%N)" >> $temp_datetime
 
 # extract linux epoch timestamp from prev file. `-F` is field-separator, `2>` is stderr redirection.
 epoch1970sec_prev=`grep BUILD_EPOCH1970  $TargetFile  2>/dev/null |  awk -F " " '{print $3}'`
-if (( $DEBUG_SCRIPT )); then  echo =================  $epoch1970sec; fi
+if (( $DEBUG_SCRIPT )); then  echo BUILD_EPOCH1970_SEC  $epoch1970sec; fi
 
 ## Использовать предыдующие дату и время, если разница во времени меньше 10 минут
 if (( epoch1970sec - epoch1970sec_prev < 600 )); then
