@@ -111,6 +111,8 @@ fi
 ## Header
 echo -e "/**\n * This file was created automatically by script build_info.sh.\n * DO NOT EDIT! \n */\n" > $temppath
 
+echo -e "#pragma once\n" > $temppath
+
 echo -e "#define BUILD_GIT_SHORT    \"$short\"" >> $temppath
 echo -e "#define BUILD_GIT_LONG     \"$long\""  >> $temppath
 echo -e "#define BUILD_GIT_COUNT    \"$count\"" >> $temppath
