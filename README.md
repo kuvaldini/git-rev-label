@@ -71,7 +71,16 @@ Note that paths depend on environment and project.
 ### Debug
 The script could be more verbose with non zero `DEBUG_SCRIPT` variable:
 ```
-DEBUG_SCRIPT=1  build-info-header/build-info-header.sh  .  ./src/build_info.h
+DEBUG_SCRIPT=1  tools/build-info-header/build_info.sh . Common/build_info.h
+```
+Output:
+```
+GitRepo: .
+GitRepoTopLevelPath:
+TargetFile: Common/build_info.h
+video2-c222(112c53c)
+BUILD_EPOCH1970_SEC 1517953535
+Nothing to change
 ```
 
 
