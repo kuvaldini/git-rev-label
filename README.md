@@ -46,13 +46,33 @@ Output `build_info.h` looks like:
 
 ```
 
+
+### Integration
+* Complier must know were to find `build_info.h`, so pay attention to include directories.
+* It is good approach to ignore genereted file `build_info.h` in VCS.
+
+With `qmake` generation of build information could be automated as PRE_TARGET in `.pro` file:
+```
+# generate build_info.h
+gitinfo.target = info
+gitinfo.commands = $$PWD/../tools/build-info-header/build_info.sh  "$$PWD/../"  '$$OUT_PWD/build_info.h'
+PRE_TARGETDEPS += info
+QMAKE_EXTRA_TARGETS += gitinfo
+```
+Note that paths depend on environment and project.
+
+#### To be continued...
+* Integrate with CMake
+* Integrate with Atmel Studio
+* Integrate with Visual Studio
+* Integrate with Keil uVision
+
+
 ### Debug
 The script could be more verbose with non zero `DEBUG_SCRIPT` variable:
 ```
 DEBUG_SCRIPT=1  build-info-header/build-info-header.sh  .  ./src/build_info.h
 ```
-
-
 
 
 ## Mirrors
