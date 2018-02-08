@@ -91,10 +91,16 @@ Nothing to change
 ```
 
 ## Advanced hacks
-Since commit TODO_1abb6521 `build_info.h` is rewritten only if difference between current and previous timestamps is more than `RequireTimeDiffSeconds`. The default value is 600 - ten minutes.
+When you stay on the same branch, same commit and have same dirty satus the only reason 
+to regenerate *build_info.h* is to update timestamps. To save build time meet new feature.
+Since commit e15ec7b8200d2f2aebd1db82e0981d1717e78a38 `build_info.h` is rewritten only if difference between 
+current and previous timestamps is more than `RequireTimeDiffSeconds`. The default value is 600 - ten minutes.
 ```
 RequireTimeDiffSeconds=10  tools/build-info-header/build_info.sh  .  src/build_info.h
 ```
+
+## ToDo
+* Ability to disable time and date
 
 
 ## Mirrors
