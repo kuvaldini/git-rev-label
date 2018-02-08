@@ -75,7 +75,7 @@ Go to *menu Project -> YourProject Properties (Alt+F7)*, select *Build Events* a
 * Integrate with Keil uVision
 
 
-### Debug
+## Debug
 The script could be more verbose with non zero `DEBUG_SCRIPT` variable:
 ```
 DEBUG_SCRIPT=1  tools/build-info-header/build_info.sh . Common/build_info.h
@@ -88,6 +88,12 @@ TargetFile: Common/build_info.h
 video2-c222(112c53c)
 BUILD_EPOCH1970_SEC 1517953535
 Nothing to change
+```
+
+## Advanced hacks
+Since commit TODO_1abb6521 `build_info.h` is rewritten only if difference between current and previous timestamps is more than `RequireTimeDiffSeconds`. The default value is 600 - ten minutes.
+```
+RequireTimeDiffSeconds=10  tools/build-info-header/build_info.sh  .  src/build_info.h
 ```
 
 
