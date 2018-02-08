@@ -51,9 +51,10 @@ The script should be execeuted in `bash` compatible shell. Because it uses opera
 * Complier must know were to find `build_info.h`, so pay attention to include directories.
 * It is good approach to ignore genereted file `build_info.h` in VCS.
 
-With `qmake` generation of build information could be automated as PRE_TARGET in `.pro` file:
+### Integrate with QMake
+With `qmake` generation of build information could be automated as PRE_TARGETDEPS in `.pro` file:
 ```
-# generate build_info.h
+## Generate build_info.h
 gitinfo.target = info
 gitinfo.commands = $$PWD/../tools/build-info-header/build_info.sh  "$$PWD/../"  '$$OUT_PWD/build_info.h'
 PRE_TARGETDEPS += info
@@ -62,7 +63,7 @@ QMAKE_EXTRA_TARGETS += gitinfo
 *Note that paths depend on environment and project.*
 
 ### Integrate with Atmel Studio
-Go to *menu Project -> YourProject Properties (Alt+F7)*, select *Build Events* and fill *Pre-build event command line with something like following
+Go to *menu Project -> YourProject Properties (Alt+F7)*, select *Build Events* and fill *Pre-build event command line* with something like following
 ```
 "C:\Program Files\Git\bin\sh"  ..\utils\build-info-header\build_info.sh  .  $(MSBuildProjectDirectory)\src\build_info.h 
 ```
@@ -70,7 +71,6 @@ Go to *menu Project -> YourProject Properties (Alt+F7)*, select *Build Events* a
 
 #### To be continued...
 * Integrate with CMake
-* Integrate with Atmel Studio
 * Integrate with Visual Studio
 * Integrate with Keil uVision
 
