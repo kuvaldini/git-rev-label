@@ -37,7 +37,7 @@ fi
 if [[ -n "$1" ]]; then
 	GitRepo=$1
 	if [ ! -d "$GitRepo" ]; then
-		echo "GitRepo $GitRepo is not a directory"
+		echo "GitRepo $GitRepo is not a directory" >> /dev/stderr
 		exit 1
 	fi
 else
@@ -45,13 +45,13 @@ else
 fi
 
 ## git command with directory prefix. Todo replace all `git -C "$GitRepo"` to `$GIT` and test.
-#GIT="git -C \"$GitRepo\""
+GIT="git -C "$GitRepo
 
 ## Check if $GitRepo is inside Git repository  ###--is-inside-git-dir
-$(git -C "$GitRepo" rev-parse)
+$($GIT rev-parse)
 if [ $? != 0 ]; then 
-	echo "GitRepo \"${GitRepo}\" is not valid"
-	exit 1;
+	echo "GitRepo \"${GitRepo}\" is not valid" >> /dev/stderr
+	exit $?;
 fi
 
 ## Set TargetFile
@@ -59,7 +59,7 @@ if [ -n "$2" ]; then
 	TargetFile=$2
 else
 	## Default TargetFile. 
-	GitRepoTopLevelPath=$(git -C "$GitRepo" rev-parse --show-toplevel)
+	GitRepoTopLevelPath=$($GIT rev-parse --show-toplevel)
 	contains "$GitRepoTopLevelPath" "fatal"  &&  \
 			echo "$GitRepoTopLevelPath"  &&  exit
 	TargetFile="$GitRepoTopLevelPath/src/build_info.h"
@@ -71,23 +71,23 @@ if (( $DEBUG_SCRIPT )); then
 	echo GitRepoTopLevelPath: $GitRepoTopLevelPath
 	echo TargetFile: $TargetFile
 else
-	StdErrMod="2>/dev/null"
+	StdErrMod="2>/dev/null"  ## To be used. Do nothing when debug and hide messages when working normally.
 fi
 
 temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
 
-short=$(git -C "$GitRepo" rev-parse --short HEAD)
-long=$(git -C "$GitRepo" rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
-count=$(git -C "$GitRepo" rev-list --count HEAD)
+short=$($GIT rev-parse --short HEAD)
+long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
+count=$($GIT rev-list --count HEAD)
 
-git -C "$GitRepo" diff-index --quiet HEAD --; isDirty=$?
+$GIT diff-index --quiet HEAD --; isDirty=$?
 [[ $isDirty ]]  &&   dirty="dirty"  ||   dirty=""
 [[ $isDirty ]]  &&  _dirty="-dirty" ||  _dirty=""
-#if [[ -n $(git -C "$GitRepo" status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
+#if [[ -n $($GIT status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
 #if [[ -n $dirty ]] ; then _dirty="-$dirty"; else _dirty=""; fi
 
 ## Записать тэг.
-tag=$(git -C "$GitRepo" tag --list --points-at HEAD)
+tag=$($GIT tag --list --points-at HEAD)
 if [ "$tag" ] ; then
   if [ "$dirty" ] ; then
     tag_=$tag
@@ -98,13 +98,13 @@ fi
 
 ## Записать ветку. 
 ## Check detached
-if [ -z $(git -C "$GitRepo" symbolic-ref HEAD -q) ]; then
+if [ -z $($GIT symbolic-ref HEAD -q) ]; then
 	branch="DETACHED"
 else
-	#branch=$(git -C "$GitRepo" branch --list --points-at HEAD | grep "^* .*")
+	#branch=$($GIT branch --list --points-at HEAD | grep "^* .*")
 	#branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
-	#branch=$(git -C "$GitRepo" name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
-	branch=$(git rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no pasing required
+	#branch=$($GIT name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
+	branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no pasing required
 fi
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
@@ -201,7 +201,7 @@ cat $temp_datetime  >>  $temppath
 if diff "$temppath" "$TargetFile" &>/dev/null  ; then
   echo Nothing to change
 else
-  cp "$temppath" "$TargetFile"  &&  echo Written to "$TargetFile"  ||  echo Failed writing to "$TargetFile"
+  cp "$temppath" "$TargetFile"  &&  echo Written to "$TargetFile"  ||  (echo Failed writing to "$TargetFile" >> /dev/stderr; exit $?)
 fi
 
 rm "$temppath"
