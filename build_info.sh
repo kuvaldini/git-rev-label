@@ -186,7 +186,8 @@ epoch1970sec_prev=`grep BUILD_EPOCH1970  $TargetFile  2>/dev/null |  awk -F " " 
 if (( $DEBUG_SCRIPT )); then  echo BUILD_EPOCH1970_SEC  $epoch1970sec; fi
 
 ## Использовать предыдующие дату и время, если разница во времени меньше 10 минут
-if (( epoch1970sec - epoch1970sec_prev < 600 )); then
+RequireTimeDiffSeconds=${RequireTimeDiffSeconds:-600}
+if (( epoch1970sec - epoch1970sec_prev < $RequireTimeDiffSeconds )); then
 	echo -e "" > $temp_datetime
 	# extract date-time block from prev file
 	awk -v RS="" '/#define BUILD_DATE.*/' $TargetFile  >> $temp_datetime
