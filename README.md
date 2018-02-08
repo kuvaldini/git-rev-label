@@ -2,8 +2,6 @@ Shell script creates `build_info.h` C header file with information about reposit
 Include this header to access build information from code.
 
 ```
-#!shell
-
 $ ./build_info.sh -h
 Usage:  build_info.sh [GitRepo] [TargetFile]
    GitRepo     Any path under Git VCS. If not specified, uses current folder
@@ -46,8 +44,10 @@ Output `build_info.h` looks like:
 
 ```
 
+## Requirements
+The script should be execeuted in `bash` compatible shell. Because it uses operator `[[` which is not defined in BSD shell.
 
-### Integration
+## Integration
 * Complier must know were to find `build_info.h`, so pay attention to include directories.
 * It is good approach to ignore genereted file `build_info.h` in VCS.
 
@@ -59,7 +59,14 @@ gitinfo.commands = $$PWD/../tools/build-info-header/build_info.sh  "$$PWD/../"  
 PRE_TARGETDEPS += info
 QMAKE_EXTRA_TARGETS += gitinfo
 ```
-Note that paths depend on environment and project.
+*Note that paths depend on environment and project.*
+
+### Integrate with Atmel Studio
+Go to *menu Project -> YourProject Properties (Alt+F7)*, select *Build Events* and fill *Pre-build event command line with something like following
+```
+"C:\Program Files\Git\bin\sh"  ..\utils\build-info-header\build_info.sh  .  $(MSBuildProjectDirectory)\src\build_info.h 
+```
+*Note that paths depend on environment and project.*
 
 #### To be continued...
 * Integrate with CMake
