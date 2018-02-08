@@ -43,6 +43,10 @@ if [[ -n "$1" ]]; then
 else
 	GitRepo=$(pwd)
 fi
+
+## git command with directory prefix. Todo replace all `git -C "$GitRepo"` to `$GIT` and test.
+#GIT="git -C \"$GitRepo\""
+
 ## Check if $GitRepo is inside Git repository  ###--is-inside-git-dir
 $(git -C "$GitRepo" rev-parse)
 if [ $? != 0 ]; then 
@@ -76,9 +80,9 @@ short=$(git -C "$GitRepo" rev-parse --short HEAD)
 long=$(git -C "$GitRepo" rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
 count=$(git -C "$GitRepo" rev-list --count HEAD)
 
-git diff-index --quiet HEAD --; isDirty=$?
-[[ $isDirty == true ]]  &&   dirty="dirty"  ||   dirty=""
-[[ $isDirty == true ]]  &&  _dirty="-dirty" ||  _dirty=""
+git -C "$GitRepo" diff-index --quiet HEAD --; isDirty=$?
+[[ $isDirty ]]  &&   dirty="dirty"  ||   dirty=""
+[[ $isDirty ]]  &&  _dirty="-dirty" ||  _dirty=""
 #if [[ -n $(git -C "$GitRepo" status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
 #if [[ -n $dirty ]] ; then _dirty="-$dirty"; else _dirty=""; fi
 
