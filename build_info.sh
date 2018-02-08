@@ -101,9 +101,10 @@ fi
 if [ -z $(git -C "$GitRepo" symbolic-ref HEAD -q) ]; then
 	branch="DETACHED"
 else
-	branch=$(git -C "$GitRepo" branch --list --points-at HEAD | grep "^* .*")
-	branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
+	#branch=$(git -C "$GitRepo" branch --list --points-at HEAD | grep "^* .*")
+	#branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
 	#branch=$(git -C "$GitRepo" name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
+	branch=$(git rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no pasing required
 fi
 if [ "$branch" ] ; then
   if [ "$dirty" ] ; then
@@ -195,13 +196,11 @@ cat $temp_datetime  >>  $temppath
 ## ToDo  Всё равно обновлять время если файлы были изменены. Например, учитывать вывод `git status`.
 
 
-## Копировать файл если есть изменения
+## Копировать файл если есть изменения. &>/dev/null для вывода stdout и stderr в никуда.
 if diff "$temppath" "$TargetFile" &>/dev/null  ; then
-#if diff "$temppath" "$TargetFile" ; then
   echo Nothing to change
 else
-  cp "$temppath" "$TargetFile"
-  echo Written to "$TargetFile"
+  cp "$temppath" "$TargetFile"  &&  echo Written to "$TargetFile"  ||  echo Failed writing to "$TargetFile"
 fi
 
 rm "$temppath"
