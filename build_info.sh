@@ -4,6 +4,8 @@
 ## bash is required for operator [[
 
 
+#DEBUG_SCRIPT=1
+
 # contains(string, substring)
 #
 # Returns 0 if the specified string contains the specified substring,
@@ -46,6 +48,9 @@ fi
 
 ## git command with directory prefix. Todo replace all `git -C "$GitRepo"` to `$GIT` and test.
 GIT="git -C "$GitRepo
+if (( $DEBUG_SCRIPT ));  then
+	echo "GIT : $GIT"
+fi
 
 ## Check if $GitRepo is inside Git repository  ###--is-inside-git-dir
 $($GIT rev-parse)
@@ -65,7 +70,6 @@ else
 	TargetFile="$GitRepoTopLevelPath/src/build_info.h"
 fi
 
-#DEBUG_SCRIPT=1
 if (( $DEBUG_SCRIPT )); then
 	echo GitRepo: $GitRepo
 	echo GitRepoTopLevelPath: $GitRepoTopLevelPath
@@ -80,11 +84,20 @@ short=$($GIT rev-parse --short HEAD)
 long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
 count=$($GIT rev-list --count HEAD)
 
-$GIT diff-index --quiet HEAD --; isDirty=$?
-[[ $isDirty ]]  &&   dirty="dirty"  ||   dirty=""
-[[ $isDirty ]]  &&  _dirty="-dirty" ||  _dirty=""
+## Checking for a dirty index or untracked files with Git
+## [1]  https://stackoverflow.com/questions/2657935/checking-for-a-dirty-index-or-untracked-files-with-git#2659808
+## [2]  https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script
+#$GIT diff-index --quiet HEAD --;  ## This somehow gives different results under Linux and Windows on the same working tree. It does not see newly created files.
+$GIT diff --exit-code >/dev/null  ## Does not see new (untracked) files.
+isDirty=$?
+if (( $DEBUG_SCRIPT ));  then
+	echo isDirty : $isDirty
+fi
+[[ $isDirty -ne 0 ]]  &&   dirty="dirty"  ||   dirty=""
+[[ $isDirty -ne 0 ]]  &&  _dirty="-dirty" ||  _dirty=""
 #if [[ -n $($GIT status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
-#if [[ -n $dirty ]] ; then _dirty="-$dirty"; else _dirty=""; fi
+#if [ $isDirty -ne 0 ] ; then  dirty="dirty" ; else  dirty=""; fi
+#if [ $isDirty -ne 0 ] ; then _dirty="-dirty"; else _dirty=""; fi
 
 ## Записать тэг.
 tag=$($GIT tag --list --points-at HEAD)
