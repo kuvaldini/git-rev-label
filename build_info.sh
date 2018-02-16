@@ -182,6 +182,7 @@ temp_datetime="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http
 epoch1970sec=$(date +%s)
 echo -e "" > $temp_datetime
 echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temp_datetime
+echo -e "#define BUILD_DATE_RFC3339   \"$(date --rfc-3339)\"" >> $temp_datetime
 echo -e "#define BUILD_EPOCH1970_SEC  $epoch1970sec " >> $temp_datetime
 echo -e "#define BUILD_DATE           \"$(date +%F)\"" >> $temp_datetime
 echo -e "#define BUILD_TIME           \"$(date +%T)\"" >> $temp_datetime
