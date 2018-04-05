@@ -82,7 +82,7 @@ temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://un
 
 short=$($GIT rev-parse --short HEAD)
 long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
-count=$($GIT rev-list --count HEAD)
+count=$($GIT rev-list --count --first-parent HEAD)
 
 ## Checking for a dirty index or untracked files with Git
 ## [1]  https://stackoverflow.com/questions/2657935/checking-for-a-dirty-index-or-untracked-files-with-git#2659808
@@ -203,7 +203,7 @@ if (( $DEBUG_SCRIPT )); then
 fi
 
 ## Использовать предыдующие дату и время, если разница во времени меньше 10 минут
-RequireTimeDiffSeconds=${RequireTimeDiffSeconds:-600}
+RequireTimeDiffSeconds=${RequireTimeDiffSeconds:-600}  ## Use default value 600s = 10 mims
 if (( epoch1970sec - epoch1970sec_prev < $RequireTimeDiffSeconds )); then
 	echo -e "" > $temp_datetime
 	# extract date-time block from prev file
