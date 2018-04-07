@@ -82,7 +82,7 @@ temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://un
 
 short=$($GIT rev-parse --short HEAD)
 long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
-count=$($GIT rev-list --count --first-parent HEAD)
+count=$($GIT rev-list --count --first-parent ${BuildInfo_RevName:=HEAD})
 
 ## Checking for a dirty index or untracked files with Git
 ## [1]  https://stackoverflow.com/questions/2657935/checking-for-a-dirty-index-or-untracked-files-with-git#2659808
@@ -98,6 +98,7 @@ fi
 #if [[ -n $($GIT status --porcelain) ]]; then dirty="dirty"; else dirty=""; fi
 #if [ $isDirty -ne 0 ] ; then  dirty="dirty" ; else  dirty=""; fi
 #if [ $isDirty -ne 0 ] ; then _dirty="-dirty"; else _dirty=""; fi
+## Note: ${$dirty:+-$dirty} expands to nothing when dirty is empty or undefined, and prepends '-' else.
 
 ## Записать тэг.
 tag=$($GIT tag --list --points-at HEAD)
