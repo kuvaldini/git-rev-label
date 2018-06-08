@@ -1,7 +1,7 @@
 Shell script creates `build_info.h` C header file with information about repository: branch, tags, timestamps, etc.
 Include this header to access build information from code.
 
-```
+```sh
 $ ./build_info.sh -h
 Usage:  build_info.sh [GitRepo] [TargetFile]
    GitRepo     Any path under Git VCS. If not specified, uses current folder
@@ -12,7 +12,7 @@ Usage:  build_info.sh [GitRepo] [TargetFile]
 
 Output `build_info.h` looks like:
 
-```C
+```C++
 /**
  * This file was created automatically by script build_info.sh.
  * DO NOT EDIT! 
@@ -43,6 +43,7 @@ Output `build_info.h` looks like:
 #define BUILD_NANOSEC        623915100
 
 ```
+#### The quintessens of this output is **`BUILD_GIT`**.
 
 ## Requirements
 The script should be execeuted in `bash` compatible shell. Because it uses operator `[[` which is not defined in BSD shell.
