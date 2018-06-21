@@ -1,3 +1,10 @@
+# build-info-header 
+##### bash script extracts information from Git and creates C header files with defined symbols to information about current build.
+
+## Use cases
+This is super useful when you want store some information about current build in compiled binary.
+
+
 Shell script creates `build_info.h` C header file with information about repository: branch, tags, timestamps, etc.
 Include this header to access build information from code.
 
