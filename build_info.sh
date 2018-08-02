@@ -216,7 +216,7 @@ cat $temp_datetime  >>  $temppath
 
 
 ## Копировать файл если есть изменения. &>/dev/null для вывода stdout и stderr в никуда.
-if diff "$temppath" "$TargetFile" &>/dev/null  ; then
+if diff --brief "$temppath" "$TargetFile" &>/dev/null  ; then
   echo Nothing to change
 else
   cp "$temppath" "$TargetFile"  &&  echo Written to "$TargetFile"  ||  (echo Failed writing to "$TargetFile" >> /dev/stderr; exit $?)
