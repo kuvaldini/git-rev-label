@@ -50,7 +50,7 @@ Output `build_info.h` looks like:
 #define BUILD_NANOSEC        623915100
 
 ```
-#### The quintessens of this output is **`BUILD_GIT`**.
+#### The quintessence of this output is **`BUILD_GIT`**.
 
 ## Requirements
 The script should be execeuted in `bash` compatible shell. Because it uses operator `[[` which is not defined in BSD shell.
