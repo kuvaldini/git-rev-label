@@ -103,6 +103,7 @@ fi
 ## Записать тэг.
 tag=$($GIT tag --list --points-at HEAD)
 if [ "$tag" ] ; then
+  #tag_=$tag${dirty:+-$dirty}
   if [ "$dirty" ] ; then
     tag_=$tag
   else
@@ -118,9 +119,10 @@ else
 	#branch=$($GIT branch --list --points-at HEAD | grep "^* .*")
 	#branch=${branch:2}  ## Текущая ветка отмечена *. Предполагается результат "* branch", убрать первые 2 символа.
 	#branch=$($GIT name-rev --name-only HEAD)  ## Возвращает первую попавшую ветку.	
-	branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no pasing required
+	branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
 fi
 if [ "$branch" ] ; then
+  #branch_=$branch${dirty:+-$dirty}
   if [ "$dirty" ] ; then
     branch_=$branch-$dirty
   else
