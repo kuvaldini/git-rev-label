@@ -1,8 +1,5 @@
 #!/bin/bash
-
-## INFO
-## bash is required for operator [[
-
+#set -uo pipefail
 
 #DEBUG_SCRIPT=1
 
@@ -48,6 +45,7 @@ fi
 
 ## git command with directory prefix. Todo replace all `git -C "$GitRepo"` to `$GIT` and test.
 GIT="git -C "$GitRepo
+DEBUG_SCRIPT=${DEBUG_SCRIPT:=0}
 if (( $DEBUG_SCRIPT ));  then
 	echo "GIT : $GIT"
 fi
@@ -78,7 +76,7 @@ else
 	StdErrMod="2>/dev/null"  ## To be used. Do nothing when debug and hide messages when working normally.
 fi
 
-temppath="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
+temppath=`mktemp`  #$(mktemp -p /dev/shm/)  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
 
 short=$($GIT rev-parse --short HEAD)
 long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
@@ -181,7 +179,7 @@ echo -e "#define BUILD_INFO         \"Build \" BUILD_DATE_ISO8601 \" Git \" BUIL
 ##	#define BUILD_SEC            51
 ##	#define BUILD_NANOSEC        135301337 
 ##	```
-temp_datetime="$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
+temp_datetime=`mktemp`   #"$(mktemp -p /dev/shm/)"  ## Файл по идее в ОЗУ http://unix.stackexchange.com/a/188537/156608
 epoch1970sec=$(date +%s)
 echo -e "" > $temp_datetime
 echo -e "#define BUILD_DATE_ISO8601   \"$(date --iso-8601=seconds)\"" >> $temp_datetime
