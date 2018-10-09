@@ -2,7 +2,7 @@
 
 ## Repo https://gitlab.com/kyb/build-info-header
 ## Update with:
-##   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh
+##   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
 
 set -e
 
