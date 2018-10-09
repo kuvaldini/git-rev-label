@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Repo https://gitlab.com/kyb/build-info-header
+## Update with:
+##   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh
+
 set -e
 
 GIT=${GIT:=git}
