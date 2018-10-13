@@ -27,7 +27,8 @@ else
 fi
 branch_=$branch$_dirty   # ${branch:+$branch$_dirty}
 
-#revision="${tag+$branch}-c$count($short)$_dirty"
-revision="${tag+$branch}-c$count-$short$_dirty"
+refname=${tag+$branch}
+format=${1:-'$refname-c$count-g$short$_dirty'}
+revision=$( echo $(eval echo "$format") )   #"$refname-c$count-g$short$_dirty"
 
 echo "$revision"
