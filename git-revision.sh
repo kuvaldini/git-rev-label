@@ -16,11 +16,12 @@ GIT=${GIT:=git}
 #alias GIT="$GIT"
 
 short=$($GIT rev-parse --short HEAD)
-#SHORT=$( echo $short | tr a-z A-Z )
+SHORT=$( echo $short | tr a-z A-Z )
 long=$($GIT rev-parse HEAD)  #git -C $GitRepo show-ref -h HEAD
+LONG=$( echo $long | tr a-z A-Z )
 count=$($GIT rev-list --count --first-parent ${BuildInfo_RevName:=HEAD})
 
-dirty=`$GIT diff --quiet || echo DIRTY`  # $GIT diff --quiet || dirty="dirty"
+dirty=`$GIT diff --quiet || echo dirty`  # $GIT diff --quiet || dirty="dirty"
 _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
 DIRTY=$( echo $dirty | tr a-z A-Z )
 _DIRTY=$( echo $_dirty | tr a-z A-Z )
