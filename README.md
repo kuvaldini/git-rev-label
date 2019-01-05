@@ -19,34 +19,39 @@ Usage:  build_info.sh [GitRepo] [TargetFile]
 
 Output `build_info.h` looks like:
 
-```C++
+```C
 /**
  * This file was created automatically by script build_info.sh.
  * DO NOT EDIT! 
  */
 
-#define BUILD_GIT_SHORT    "2973efa"
-#define BUILD_GIT_LONG     "2973efa5554c7a14730e48f18ba671eb23df9958"
+#pragma once
+
+#define BUILD_GIT_SHORT    "926b3d8"
+#define BUILD_GIT_LONG     "926b3d81eeae2b600c2fcbde2249a9767e678940"
+#define BUILD_GIT_COUNT    "5"
 #define BUILD_GIT_DIRTY    "dirty"
 #define BUILD_GIT_DIRTY_   "-dirty"
 #define BUILD_GIT_TAG      ""
-#define BUILD_GIT_BRANCH   "config-file-dirty"
-#define BUILD_GIT_         BUILD_GIT_BRANCH "(" BUILD_GIT_SHORT ")" BUILD_GIT_DIRTY_
-#define BUILD_GIT          "config-file(2973efa)-dirty"
+#define BUILD_GIT_BRANCH   "stable-dirty"
+#define BUILD_GIT_         BUILD_GIT_BRANCH "-c" BUILD_GIT_COUNT "(" BUILD_GIT_SHORT ")" BUILD_GIT_DIRTY_
+#define BUILD_GIT          "stable-c5(926b3d8)-dirty"
+//#define BUILD_INFO         "Build " __DATE__ " " __TIME__ " Git " BUILD_GIT
 #define BUILD_INFO         "Build " BUILD_DATE_ISO8601 " Git " BUILD_GIT
 
-#define BUILD_DATE_ISO8601   "2017-05-28T13:40:25+0300"
-#define BUILD_EPOCH1970_SEC  1495968025 
-#define BUILD_DATE           "2017-05-28"
-#define BUILD_TIME           "13:40:25"
-#define BUILD_DATE_TIME      "2017-05-28 13:40:25"
-#define BUILD_YEAR           2017
-#define BUILD_MONTH          05
-#define BUILD_DAY            28
-#define BUILD_HOUR           13
-#define BUILD_MIN            40
-#define BUILD_SEC            25
-#define BUILD_NANOSEC        623915100
+#define BUILD_DATE_ISO8601   "2018-12-19T16:26:11+02:00"
+#define BUILD_DATE_RFC3339   "2018-12-19 16:26:11+02:00"
+#define BUILD_EPOCH1970_SEC  1545229571 
+#define BUILD_DATE           "2018-12-19"
+#define BUILD_TIME           "16:26:11"
+#define BUILD_DATE_TIME      "2018-12-19 16:26:11"
+#define BUILD_YEAR           2018
+#define BUILD_MONTH          12
+#define BUILD_DAY            19
+#define BUILD_HOUR           16
+#define BUILD_MIN            26
+#define BUILD_SEC            11
+#define BUILD_NANOSEC        348941683
 
 ```
 #### The quintessence of this output is **`BUILD_GIT`**.
