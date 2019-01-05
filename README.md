@@ -17,7 +17,7 @@ Usage:  build_info.sh [GitRepo] [TargetFile]
 ```
 
 
-Output `build_info.h` looks like:
+Output [`build_info.h`](build_info.example.h) looks like:
 
 ```C
 /**
@@ -28,7 +28,7 @@ Output `build_info.h` looks like:
 #pragma once
 
 #define BUILD_GIT_SHORT    "926b3d8"
-#define BUILD_GIT_LONG     "926b3d81eeae2b600c2fcbde2249a9767e678940"
+#define BUILD_GIT_LONG     "926b3d81eeae2b600c2f33de2249a9767e678940"
 #define BUILD_GIT_COUNT    "5"
 #define BUILD_GIT_DIRTY    "dirty"
 #define BUILD_GIT_DIRTY_   "-dirty"
@@ -52,7 +52,6 @@ Output `build_info.h` looks like:
 #define BUILD_MIN            26
 #define BUILD_SEC            11
 #define BUILD_NANOSEC        348941683
-
 ```
 #### The quintessence of this output is **`BUILD_GIT`**.
 
