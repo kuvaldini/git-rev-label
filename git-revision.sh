@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## Repo https://gitlab.com/kyb/build-info-header
-## Update with:
+## Install and Update with:
 ##   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
 ## To make this command work as git subcommand `git revision` create link to this script in PATH:
 ##   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
@@ -53,28 +53,30 @@ function --help {
    git revision --variables [--export]
    eval $( git revision --variables [--export] )
    
+GET FIRST TIME:
+   wget '"'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false'"' -qO git-revision.sh  &&  chmod +x git-revision.sh
+   
 INSTALLATION:
    '"${BASH_SOURCE[0]}"' --install|--install-link [--install-dir=/usr/local/bin]
 or simply make this script accessable in PATH as git-revision
    ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
    
 UPDATE:
-   '"${BASH_SOURCE[0]} --update"'
    git revision --update
 or
-   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+   wget '"'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
 
 More info at https://gitlab.com/kyb/git-revision and https://gitlab.com/kyb/build-info-header
-AUTHOR kyb (Iva Kyb) gitlab.com/kyb
+AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 '
 }
 function --version {
-   echo "git-revision v1.0 by kyb@gitlab.com"
+   echo "git-revision v1.1 https://gitlab.com/kyb/build-info-header"
 }
 -V(){ --version "$@"; }
 
 function --variables {
-   var_is_unset export  &&  export=  ||  export=export
+   var_is_unset_or_empty export  &&  export=  ||  export=export
    echo ${export} GIT=\'"$GIT"\'
    echo ${export} short=\'"$short"\'
    echo ${export} SHORT=\'"$SHORT"\'
@@ -97,7 +99,7 @@ function --variables {
 -v(){ --variables "$@"; }
 
 ## Unset variables from environment
-unset format install_dir
+unset format install_dir export
 
 while [[ $# > 0 ]] ;do
    case $1 in 
