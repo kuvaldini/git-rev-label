@@ -24,22 +24,49 @@ is_sourced(){
    [[ "${BASH_SOURCE[0]}" != "${0}" ]]
 }
 
+var_is_set(){
+   declare -rn var=$1
+   ! test -z ${var+x}
+}
+var_is_set_not_empty(){
+   declare -rn var=$1
+   ! test -z ${var:+x}
+}
+var_is_unset(){
+   declare -rn var=$1
+   test -z ${var+x}
+}
+var_is_unset_or_empty(){
+   declare -rn var=$1
+   test -z ${var:+x}
+}
+
 
 function --help {
-   echo \
-"Repo https://gitlab.com/kyb/build-info-header
-Update with:
-  wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
-To make this command work as git subcommand \`git revision\` create link to this script in PATH:
-  ln -s \$PWD/git-revision.sh /usr/local/bin/git-revision
-Then use it as one of
-  git revision
-  git revision [--help|-h|-?]
-  git revision [--version|-V]
-  git revision '\$refname-c\$count-g\$short\$_dirty'"
-  git revision --format="`cat build_info.template.h`"
-  git revision --variables [--export]
-  eval $( git revision --variables [--export] )
+   echo -n \
+'USAGE:
+   git revision
+   git revision [--help|-h|-?]
+   git revision [--version|-V]
+   git revision '"'"'$refname-c\$count-g\$short\$_dirty'"'"'
+   git revision --format="`cat build_info.template.h`"
+   git revision --variables [--export]
+   eval $( git revision --variables [--export] )
+   
+INSTALLATION:
+   '"${BASH_SOURCE[0]}"' --install|--install-link [--install-dir=/usr/local/bin]
+or simply make this script accessable in PATH as git-revision
+   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
+   
+UPDATE:
+   '"${BASH_SOURCE[0]} --update"'
+   git revision --update
+or
+   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+
+More info at https://gitlab.com/kyb/git-revision and https://gitlab.com/kyb/build-info-header
+AUTHOR kyb (Iva Kyb) gitlab.com/kyb
+'
 }
 function --version {
    echo "git-revision v1.0 by kyb@gitlab.com"
@@ -65,46 +92,33 @@ function --variables {
    echo ${export} branch_=\'"$branch_"\'
    echo ${export} refname=\'"$refname"\'
    echo ${export} format=\'"$format"\'
-   #echo ${export} revision=\'"$revision"\'
+   var_is_set revision  &&  echo ${export} revision=\'"$revision"\'
 }
 -v(){ --variables "$@"; }
 
-var_is_set(){
-   declare -rn var=$1
-   ! test -z ${var+x}
-}
-var_is_set_not_empty(){
-   declare -rn var=$1
-   ! test -z ${var:+x}
-}
-var_is_unset(){
-   declare -rn var=$1
-   test -z ${var+x}
-}
-var_is_unset_or_empty(){
-   declare -rn var=$1
-   test -z ${var:+x}
-}
-
-## Set default value, and overwrite variable from environment
-format='$refname-c$count-g$short$_DIRTY'
+## Unset variables from environment
+unset format install_dir
 
 while [[ $# > 0 ]] ;do
    case $1 in 
       --help|-help|help|-h|\?|-\?)  
          --help
-         exit 0
+         exit
          ;;
       --version|-V)
          --version
-         exit 0
+         exit
          ;;
-      --update-script)
-         exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
-         ;;
-      --variables|-v)  
+      --variables|-v|--install-link|--install|--install-script|--update|--update-script)  
          var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
+         ;;
+      --install-dir=*)
+         var_is_set install_dir  && echowarn "!!! install_dir already set to '$install_dir'. Overriding"
+         install_dir="${1##--install-dir=}"
+         ;;
+      --force|-f)
+         force=f
          ;;
       --export|-e)  
          var_is_set export  && echowarn "!!! export already set to '$export'. Overriding"
@@ -130,12 +144,36 @@ while [[ $# > 0 ]] ;do
    esac
    shift
 done
+
+########### MAINTENANCE ACTIONS ###########
+case "$action" in
+   --update|--update-script)
+      exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+      ;;
+   --install-link)
+      install_dir=${install_dir:='/usr/local/bin'}
+      exec ln -s ${force:+-f} $(readlink -f "${BASH_SOURCE[0]}") "$install_dir/git-revision"
+      ;;
+   --install|--install-script)
+      install_dir=${install_dir:='/usr/local/bin'}
+      exec cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
+      ;;
+esac
+
+########################################################
+########## CHECK CONFIGURATION VARIABLES ###############
 if var_is_set_not_empty export  &&  [[ ${action:-default_action} != --variables ]] ;then
-  echowarn "!!! --[-no]export is only meaningful with --variables."
+   echowarn "!!! --[-no]export is only meaningful with --variables."
 fi
+
+format=${format:='$refname-c$count-g$short$_DIRTY'}
 if test -z "$format" ;then
    echowarn "!!! format is empty."
 fi
+
+#####################################################
+########## SET GIT REVISION VARIABLES ###############
+######### Quintessence (quīnta essentia) ############
 
 GIT=${GIT:=git}
 #alias GIT="$GIT"
@@ -165,7 +203,7 @@ branch_=$branch$_dirty   # ${branch:+$branch$_dirty}
 refname=${tag+$branch}
 format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
-revision=$(  echo "$format" | perl -pe 's|\$([A-Za-z_]+)|$ENV{$1}|g' )   #"$refname-c$count-g$short$_dirty"
+revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|$ENV{$1}|g' )
 
 
 function default_action {
