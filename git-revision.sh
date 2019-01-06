@@ -98,7 +98,10 @@ while [[ $# > 0 ]] ;do
       --version|-V)
          --version
          exit 0
-      ;;
+         ;;
+      --update-script)
+         exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         ;;
       --variables|-v)  
          var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
