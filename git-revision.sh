@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Repo https://gitlab.com/kyb/build-info-header
 ## Update with:
@@ -86,6 +86,9 @@ var_is_unset_or_empty(){
    test -z ${var:+x}
 }
 
+## Set default value, and overwrite variable from environment
+format='$refname-c$count-g$short$_DIRTY'
+
 while [[ $# > 0 ]] ;do
    case $1 in 
       --help|-help|help|-h|\?|-\?)  
@@ -97,35 +100,35 @@ while [[ $# > 0 ]] ;do
          exit 0
       ;;
       --variables|-v)  
-         var_is_set action  &&  echo >/dev/stderr "!!! action already set to '$action'. Overriding"
+         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
          ;;
       --export|-e)  
-         var_is_set export  &&  echo >/dev/stderr "!!! export already set to '$export'. Overriding"
+         var_is_set export  && echowarn "!!! export already set to '$export'. Overriding"
          export=export
          ;;
       --no-export)  
-         var_is_set export  &&  echo >/dev/stderr "!!! export already set to '$export'. Overriding"
+         var_is_set export  && echowarn "!!! export already set to '$export'. Overriding"
          export=
          ;;
       --format=*)
-         var_is_set format  &&  echo >/dev/stderr "!!! format already set to '$format'. Overriding"
+         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="${1##--format=}"
          ;;
       --format-file=*)
-         var_is_set format  &&  echo >/dev/stderr "!!! format already set to '$format'. Overriding"
+         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$( cat ${1##--format-file=} )"
          ;;
       -*|--*) echowarn "!!! Unknown option $1";;
       *)
-         var_is_set format  &&  echo >/dev/stderr "!!! format already set to '$format'. Overriding"
+         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$1"
          ;;
    esac
    shift
 done
 if var_is_set_not_empty export  &&  [[ ${action:-default_action} != --variables ]] ;then
-   echo >/dev/stderr "!!! --[-no]export is only meaningful with --variables."
+  echowarn "!!! --[-no]export is only meaningful with --variables."
 fi
 if test -z "$format" ;then
    echowarn "!!! format is empty."
