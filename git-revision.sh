@@ -148,21 +148,23 @@ while [[ $# > 0 ]] ;do
 done
 
 ########### MAINTENANCE ACTIONS ###########
-case "$action" in
-   --update|--update-script)
-      exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
-      ;;
-   --install-link)
-      install_dir=${install_dir:='/usr/local/bin'}
-      exec ln -s ${force:+-f} $(readlink -f "${BASH_SOURCE[0]}") "$install_dir/git-revision"
-      ;;
-   --install|--install-script)
-      install_dir=${install_dir:='/usr/local/bin'}
-      install_dir=$(eval echo $install_dir)
-      cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
-      exit
-      ;;
-esac
+if var_is_set_not_empty action ;then
+   case "$action" in
+      --update|--update-script)
+         exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         ;;
+      --install-link)
+         install_dir=${install_dir:='/usr/local/bin'}
+         exec ln -s ${force:+-f} $(readlink -f "${BASH_SOURCE[0]}") "$install_dir/git-revision"
+         ;;
+      --install|--install-script)
+         install_dir=${install_dir:='/usr/local/bin'}
+         install_dir=$(eval echo $install_dir)
+         cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
+         exit
+         ;;
+   esac
+fi
 
 ########################################################
 ########## CHECK CONFIGURATION VARIABLES ###############
