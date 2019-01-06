@@ -44,12 +44,19 @@ var_is_unset_or_empty(){
 
 function --help {
    echo -n \
-'USAGE:
+'Gives information about Git repository revision in format like '"'master-c73-gbbb6bec'"'.
+Can fill template string or file. 
+This script extracts information from Git repository. Useful to give short information 
+about version of the program. The most useful is count of commits, not taking into 
+account merged branches - only first parent.
+
+USAGE:
    git revision
    git revision [--help|-h|-?]
    git revision [--version|-V]
    git revision '"'"'$refname-c\$count-g\$short\$_dirty'"'"'
    git revision --format="`cat build_info.template.h`"
+   git revision --format-file=build_info.template.h
    git revision --variables [--export]
    eval $( git revision --variables [--export] )
    
