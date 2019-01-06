@@ -158,7 +158,9 @@ case "$action" in
       ;;
    --install|--install-script)
       install_dir=${install_dir:='/usr/local/bin'}
-      exec cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
+      install_dir=$(eval echo $install_dir)
+      cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
+      exit
       ;;
 esac
 
