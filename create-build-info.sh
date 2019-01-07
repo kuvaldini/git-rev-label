@@ -2,7 +2,9 @@
 set -euo pipefail
 
 ## Example usage: 
-##    TargetFile=123.h ./create-build-info.sh --format="`cat build_info.template.h`"
+##    ./create-build-info.sh TargetFile=123.h --format="`cat build_info.template.h`"
+
+TargetFile=$1; shift
 
 D=$( dirname $( readlink -f $( which "${BASH_SOURCE[0]}" )))
 
