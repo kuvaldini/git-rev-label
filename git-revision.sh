@@ -61,6 +61,10 @@ USAGE:
    
 INSTALLATION:
    wget '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -qO git-revision.sh  &&  chmod +x git-revision.sh
+or
+   curl '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -Lf -o git-revision.sh  &&  chmod +x git-revision.sh
+
+Than   
    ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
 or simply make this script accessable in PATH as git-revision
    ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
