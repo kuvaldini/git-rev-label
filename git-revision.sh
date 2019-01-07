@@ -61,17 +61,10 @@ USAGE:
    eval $( git revision --variables [--export] )
    
 INSTALLATION:
-   wget '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -qO git-revision.sh  &&  chmod +x git-revision.sh
-or
-   curl '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -Lf -o git-revision.sh  &&  chmod +x git-revision.sh
-
-Than   
-   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
-or simply make this script accessable in PATH as git-revision
-   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
-   
-The most strightforward is:
    curl '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -Lf -o /usr/bin/git-revision.sh  &&  chmod +x /usr/bin/git-revision.sh
+   
+If script already exist locally use:
+   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
    
 UPDATE:
    git revision --update
@@ -80,7 +73,7 @@ or
 
 USE CASES:
  * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
-   Than include result header to acces build information from code. 
+   Than include result header to access build information from code. 
    See https://gitlab.com/kyb/git-revision/blob/master/build_info.template.h and
    https://gitlab.com/kyb/git-revision/blob/master/create-build-info.sh
 
