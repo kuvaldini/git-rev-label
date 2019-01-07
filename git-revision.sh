@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-## Repo https://gitlab.com/kyb/build-info-header
+## Repo https://gitlab.com/kyb/git-revision
 ## Install and Update with:
-##   wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+##   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
 ## To make this command work as git subcommand `git revision` create link to this script in PATH:
 ##   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
 ## Then use it
@@ -45,10 +45,9 @@ var_is_unset_or_empty(){
 function --help {
    echo -n \
 'Gives information about Git repository revision in format like '"'master-c73-gbbb6bec'"'.
-Can fill template string or file. 
-This script extracts information from Git repository. Useful to give short information 
-about version of the program. The most useful is count of commits, not taking into 
-account merged branches - only first parent.
+Can fill template string or file. Useful to provide information about version of 
+the program: branch, tag, commit hash, commits count, dirty status, date and time.
+One of the most useful info is count of commits, not taking into account merged branches - only first parent.
 
 USAGE:
    git revision
@@ -60,25 +59,29 @@ USAGE:
    git revision --variables [--export]
    eval $( git revision --variables [--export] )
    
-GET FIRST TIME:
-   wget '"'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false'"' -qO git-revision.sh  &&  chmod +x git-revision.sh
-   
 INSTALLATION:
-   '"${BASH_SOURCE[0]}"' --install|--install-link [--install-dir=/usr/local/bin]
+   wget '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -qO git-revision.sh  &&  chmod +x git-revision.sh
+   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
 or simply make this script accessable in PATH as git-revision
    ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
    
 UPDATE:
    git revision --update
 or
-   wget '"'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
+   wget '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
 
-More info at https://gitlab.com/kyb/git-revision and https://gitlab.com/kyb/build-info-header
+USE CASES:
+ * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
+   Than include result header to acces build information from code. 
+   See https://gitlab.com/kyb/git-revision/blob/master/build_info.template.h and
+   https://gitlab.com/kyb/git-revision/blob/master/create-build-info.sh
+
+More info at https://gitlab.com/kyb/git-revision
 AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 '
 }
 function --version {
-   echo "git-revision v1.1 https://gitlab.com/kyb/build-info-header"
+   echo "git-revision v1.1 https://gitlab.com/kyb/git-revision"
 }
 -V(){ --version "$@"; }
 
@@ -158,7 +161,7 @@ done
 if var_is_set_not_empty action ;then
    case "$action" in
       --update|--update-script)
-         exec bash -c "wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         exec bash -c "wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
          ;;
       --install-link)
          install_dir=${install_dir:='/usr/local/bin'}
