@@ -70,6 +70,9 @@ Than
 or simply make this script accessable in PATH as git-revision
    ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
    
+The most strightforward is:
+   curl '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -Lf -o /usr/bin/git-revision.sh  &&  chmod +x /usr/bin/git-revision.sh
+   
 UPDATE:
    git revision --update
 or
