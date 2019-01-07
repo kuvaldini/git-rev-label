@@ -1,3 +1,11 @@
+# [git-revision](git-revision.sh) 
+```
+wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+./git-revision.sh --help
+./git-revision.sh --install
+```
+For more info read comments in the script and look at the help section.
+
 # build-info-header 
 ##### bash script extracts information from Git and creates C header files with defined symbols to information about current build.
 
