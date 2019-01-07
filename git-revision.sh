@@ -2,6 +2,7 @@
 
 ## Repo https://gitlab.com/kyb/git-revision
 ## Install and Update with:
+##   curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -Lf -o git-revision.sh  &&  cho
 ##   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
 ## To make this command work as git subcommand `git revision` create link to this script in PATH:
 ##   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
@@ -165,7 +166,7 @@ done
 if var_is_set_not_empty action ;then
    case "$action" in
       --update|--update-script)
-         exec bash -c "wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         exec bash -c "curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -LsSf -o '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
          ;;
       --install-link)
          install_dir=${install_dir:='/usr/local/bin'}
