@@ -46,7 +46,7 @@ AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 -----------------------
 
 
-# build-info-header (legace)
+# build-info-header (legacy)
 ##### bash script extracts information from Git and creates C header files with defined symbols to information about current build.
 
 ## Use cases
