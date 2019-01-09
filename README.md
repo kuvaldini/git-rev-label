@@ -5,8 +5,48 @@ wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline
 ./git-revision.sh --install
 ```
 For more info read comments in the script and look at the help section.
+```
+Gives information about Git repository revision in format like 'master-c73-gbbb6bec'.
+Can fill template string or file. Useful to provide information about version of
+the program: branch, tag, commit hash, commits count, dirty status, date and time.
+One of the most useful info is count of commits, not taking into account merged branches - only first parent.
 
-# build-info-header 
+USAGE:
+   git revision
+   git revision [--help|-h|-?]
+   git revision [--version|-V]
+   git revision '$refname-c\$count-g\$short\$_dirty'
+   git revision --format="`cat build_info.template.h`"
+   git revision --format-file=build_info.template.h
+   git revision --variables [--export]
+   eval $( git revision --variables [--export] )
+
+INSTALLATION:
+   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
+or simply make this script accessable in PATH as git-revision
+   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
+
+UPDATE:
+   git revision --update
+or
+   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO /Users/kyb/bin/git-revision  &&  chmod +x /Users/kyb/bin/git-revision
+
+USE CASES:
+ * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status.
+   Than include result header to acces build information from code.
+   See https://gitlab.com/kyb/git-revision/blob/master/build_info.template.h and
+   https://gitlab.com/kyb/git-revision/blob/master/create-build-info.sh
+
+More info at https://gitlab.com/kyb/git-revision
+AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
+```
+
+-----------------------
+-----------------------
+
+
+# build-info-header (legace)
 ##### bash script extracts information from Git and creates C header files with defined symbols to information about current build.
 
 ## Use cases
