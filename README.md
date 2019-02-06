@@ -15,8 +15,8 @@ USAGE:
    git revision
    git revision [--help|-h|-?]
    git revision [--version|-V]
-   git revision '$refname-c\$count-g\$short\$_dirty'
-   git revision --format="`cat build_info.template.h`"
+   git revision '$refname-c$count-g$short$_dirty'
+   git revision --format='$refname-g$short$_dirty'
    git revision --format-file=build_info.template.h
    git revision --variables [--export]
    eval $( git revision --variables [--export] )
