@@ -30,7 +30,7 @@ or simply make this script accessable in PATH as git-revision
 UPDATE:
    git revision --update
 or
-   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO /Users/kyb/bin/git-revision  &&  chmod +x /Users/kyb/bin/git-revision
+   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO ~/bin/git-revision  &&  chmod +x ~/bin/git-revision
 
 USE CASES:
  * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status.
