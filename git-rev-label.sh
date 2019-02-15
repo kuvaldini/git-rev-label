@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-## Repo https://gitlab.com/kyb/git-revision
+## Repo https://gitlab.com/kyb/git-rev-label
 ## Install and Update with:
-##   curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -Lf -o git-revision.sh  &&  chmod +x git-revision.sh
-##   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
+##   curl 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -Lf -o git-rev-label.sh  &&  chmod +x git-rev-label.sh
+##   wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
 ## To make this command work as git subcommand `git revision` create link to this script in PATH:
-##   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
+##   ln -s $PWD/git-rev-label.sh /usr/local/bin/git-rev-label
 ## Then use it
 ##   git revision
 ## or
@@ -61,28 +61,28 @@ USAGE:
    eval $( git revision --variables [--export] )
    
 INSTALLATION:
-   curl '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -Lf -o /usr/bin/git-revision.sh  &&  chmod +x /usr/bin/git-revision.sh
+   curl '"'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false'"' -Lf -o /usr/bin/git-rev-label.sh  &&  chmod +x /usr/bin/git-rev-label.sh
    
 If script already exist locally use:
-   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
+   ./git-rev-label.sh --install|--install-link [--install-dir=/usr/local/bin]
    
 UPDATE:
    git revision --update
 or
-   wget '"'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
+   wget '"'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
 
 USE CASES:
  * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
    Than include result header to access build information from code. 
-   See https://gitlab.com/kyb/git-revision/blob/master/build_info.template.h and
-   https://gitlab.com/kyb/git-revision/blob/master/create-build-info.sh
+   See https://gitlab.com/kyb/git-rev-label/blob/master/build_info.template.h and
+   https://gitlab.com/kyb/git-rev-label/blob/master/create-build-info.sh
 
-More info at https://gitlab.com/kyb/git-revision
+More info at https://gitlab.com/kyb/git-rev-label
 AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 '
 }
 function --version {
-   echo "git-revision v1.1 https://gitlab.com/kyb/git-revision"
+   echo "git-rev-label v1.1 https://gitlab.com/kyb/git-rev-label"
 }
 -V(){ --version "$@"; }
 
@@ -163,16 +163,16 @@ done
 if var_is_set_not_empty action ;then
    case "$action" in
       --update|--update-script)
-         exec bash -c "curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -LsSf -o '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         exec bash -c "curl 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -LsSf -o '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
          ;;
       --install-link)
          install_dir=${install_dir:='/usr/local/bin'}
-         exec ln -s ${force:+-f} $(readlink -f "${BASH_SOURCE[0]}") "$install_dir/git-revision"
+         exec ln -s ${force:+-f} $(readlink -f "${BASH_SOURCE[0]}") "$install_dir/git-rev-label"
          ;;
       --install|--install-script)
          install_dir=${install_dir:='/usr/local/bin'}
          install_dir=$(eval echo $install_dir)
-         cp "${BASH_SOURCE[0]}" "$install_dir/git-revision"
+         cp "${BASH_SOURCE[0]}" "$install_dir/git-rev-label"
          exit
          ;;
    esac

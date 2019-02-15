@@ -1,8 +1,8 @@
-# [git-revision](git-revision.sh) 
+# [git-rev-label](git-rev-label.sh) 
 ```
-wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
-./git-revision.sh --help
-./git-revision.sh --install
+wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
+./git-rev-label.sh --help
+./git-rev-label.sh --install
 ```
 For more info read comments in the script and look at the help section.
 ```
@@ -22,29 +22,29 @@ USAGE:
    eval $( git revision --variables [--export] )
 
 INSTALLATION:
-   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
-   ./git-revision.sh --install|--install-link [--install-dir=/usr/local/bin]
-or simply make this script accessable in PATH as git-revision
-   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
+   wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
+   ./git-rev-label.sh --install|--install-link [--install-dir=/usr/local/bin]
+or simply make this script accessable in PATH as git-rev-label
+   ln -s $PWD/git-rev-label.sh /usr/local/bin/git-rev-label
 
 UPDATE:
    git revision --update
 or
-   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO ~/bin/git-revision  &&  chmod +x ~/bin/git-revision
+   wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO ~/bin/git-rev-label  &&  chmod +x ~/bin/git-rev-label
 
 USE CASES:
  * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status.
    Than include result header to acces build information from code.
-   See https://gitlab.com/kyb/git-revision/blob/master/build_info.template.h and
-   https://gitlab.com/kyb/git-revision/blob/master/create-build-info.sh
+   See https://gitlab.com/kyb/git-rev-label/blob/master/build_info.template.h and
+   https://gitlab.com/kyb/git-rev-label/blob/master/create-build-info.sh
 
-More info at https://gitlab.com/kyb/git-revision
+More info at https://gitlab.com/kyb/git-rev-label
 AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 ```
 
 ## Install with [Homebrew](https://brew.sh)
 ```
-brew install ivakyb/homebrew-git-revision/git-revision
+brew install ivakyb/homebrew-git-rev-label/git-rev-label
 ```
 
 -----------------------
