@@ -13,14 +13,14 @@ commits count, dirty status, date and time. One of the most useful things is cou
 commits, not taking into account merged branches - only first parent.
 
 USAGE:
-   git revision
-   git revision [--help|-h|-?]
-   git revision [--version|-V]
-   git revision '$refname-c$count-g$short$_dirty'
-   git revision --format='$refname-g$short$_dirty'
-   git revision --format-file=build_info.template.h
-   git revision --variables [--export]
-   eval $( git revision --variables [--export] )
+   git rev-label
+   git rev-label [--help|-h|-?]
+   git rev-label [--version|-V]
+   git rev-label '$refname-c$count-g$short$_dirty'
+   git rev-label --format='$refname-g$short$_dirty'
+   git rev-label --format-file=build_info.template.h
+   git rev-label --variables [--export]
+   eval $( git rev-label --variables [--export] )
 
 INSTALLATION:
    wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
@@ -29,7 +29,7 @@ or simply make this script accessable in PATH as git-rev-label
    ln -s $PWD/git-rev-label.sh /usr/local/bin/git-rev-label
 
 UPDATE:
-   git revision --update
+   git rev-label --update
 or
    wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO ~/bin/git-rev-label  &&  chmod +x ~/bin/git-rev-label
 
