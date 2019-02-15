@@ -8,7 +8,7 @@ TargetFile=$1; shift
 
 D=$( dirname $( readlink -f "${BASH_SOURCE[0]}" ))  ## which was removed because of on our windows CI 'which' prints nothing if did not find in arg in PATH 
 
-source "$D/git-revision.sh" "$@"
+source "$D/git-rev-label.sh" "$@"
 
 temppath=`mktemp`
 echo "$revision" >$temppath
