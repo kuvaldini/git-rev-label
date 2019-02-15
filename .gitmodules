@@ -1,0 +1,3 @@
+[submodule "homebrew"]
+	path = homebrew
+	url = https://github.com/ivakyb/homebrew-git-rev-label.git
