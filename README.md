@@ -7,9 +7,10 @@ wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-rev-label.sh?inlin
 For more info read comments in the script and look at the help section.
 ```
 Gives information about Git repository revision in format like 'master-c73-gbbb6bec'.
-Can fill template string or file. Useful to provide information about version of
-the program: branch, tag, commit hash, commits count, dirty status, date and time.
-One of the most useful info is count of commits, not taking into account merged branches - only first parent.
+Can fill template string or file with environment variables and information from Git. 
+Useful to provide information about version of the program: branch, tag, commit hash, 
+commits count, dirty status, date and time. One of the most useful things is count of 
+commits, not taking into account merged branches - only first parent.
 
 USAGE:
    git revision
