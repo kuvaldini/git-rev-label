@@ -2,7 +2,7 @@
 
 ## Repo https://gitlab.com/kyb/git-revision
 ## Install and Update with:
-##   curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -Lf -o git-revision.sh  &&  cho
+##   curl 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -Lf -o git-revision.sh  &&  chmod +x git-revision.sh
 ##   wget 'https://gitlab.com/kyb/git-revision/raw/master/git-revision.sh?inline=false' -qO git-revision.sh  &&  chmod +x git-revision.sh
 ## To make this command work as git subcommand `git revision` create link to this script in PATH:
 ##   ln -s $PWD/git-revision.sh /usr/local/bin/git-revision
@@ -108,6 +108,7 @@ function --variables {
    var_is_set revision  &&  echo ${export} revision=\'"$revision"\'
 }
 -v(){ --variables "$@"; }
+--vars(){ --variables "$@"; }
 
 ## Unset variables from environment
 unset format install_dir export
@@ -122,7 +123,7 @@ while [[ $# > 0 ]] ;do
          --version
          exit
          ;;
-      --variables|-v|--install-link|--install|--install-script|--update|--update-script)  
+      --variables|--vars|-v|--install-link|--install|--install-script|--update|--update-script)  
          var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
          ;;
