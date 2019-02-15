@@ -42,6 +42,11 @@ More info at https://gitlab.com/kyb/git-revision
 AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 ```
 
+## Install with [Homebrew](https://brew.sh)
+```
+brew install ivakyb/homebrew-git-revision/git-revision
+```
+
 -----------------------
 -----------------------
 
