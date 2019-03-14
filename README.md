@@ -53,9 +53,9 @@ brew install git-rev-label
 -----------------------
 -----------------------
 
-This was the begining.
 
 # [build-info-header](legacy-build_info) (legacy)
+This was the begining.
 ##### bash script extracts information from Git and creates C header files with defined symbols to information about current build.
 
 ## Use cases
