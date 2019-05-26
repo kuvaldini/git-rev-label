@@ -2,7 +2,9 @@
 set -euo pipefail
 
 ## Example usage: 
-##    ./create-build-info.sh 123.h --format="`cat build_info.template.h`"
+##    ./create-build-info.sh build_info.h --format="`cat build_info.template.h`"
+## or
+##    ./create-build-info.sh build_info.h --format-file=build_info.template.h
 
 TargetFile=$1; shift
 
@@ -13,7 +15,7 @@ source "$D/git-rev-label.sh" "$@"
 temppath=`mktemp`
 echo "$revision" >$temppath
 
-## Копировать файл если есть изменения. &>/dev/null для вывода stdout и stderr в никуда.
+## Write to file only if there are changes
 if diff --brief "$temppath" "$TargetFile" &>/dev/null  ;then
    echo >/dev/stderr "Nothing to change"
 else

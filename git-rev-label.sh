@@ -61,6 +61,12 @@ USAGE:
    git rev-label --variables [--export]
    eval $( git rev-label --variables [--export] )
    
+USE CASES:
+ * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
+   Than include result header to access build information from code. 
+   See https://gitlab.com/kyb/git-rev-label/blob/master/build_info.template.h and
+   https://gitlab.com/kyb/git-rev-label/blob/master/create-build-info.sh
+
 INSTALLATION:
    curl '"'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false'"' -Lf -o /usr/bin/git-rev-label.sh  &&  chmod +x /usr/bin/git-rev-label.sh
    
@@ -71,12 +77,6 @@ UPDATE:
    git rev-label --update
 or
    wget '"'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false'"' -qO '"${BASH_SOURCE[0]}"'  &&  chmod +x '"${BASH_SOURCE[0]}"'
-
-USE CASES:
- * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
-   Than include result header to access build information from code. 
-   See https://gitlab.com/kyb/git-rev-label/blob/master/build_info.template.h and
-   https://gitlab.com/kyb/git-rev-label/blob/master/create-build-info.sh
 
 More info at https://gitlab.com/kyb/git-rev-label
 AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
@@ -150,6 +150,10 @@ while [[ $# > 0 ]] ;do
       --format-file=*)
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$( cat ${1##--format-file=} )"
+         ;;
+      --format-from=*)  ## Alias to --format-file
+         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
+         format="$( cat ${1##--format-from=} )"
          ;;
       -*|--*) echowarn "!!! Unknown option $1";;
       *)
