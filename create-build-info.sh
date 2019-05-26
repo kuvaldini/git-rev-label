@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 ## Example usage: 
-##    ./create-build-info.sh TargetFile=123.h --format="`cat build_info.template.h`"
+##    ./create-build-info.sh 123.h --format="`cat build_info.template.h`"
 
 TargetFile=$1; shift
 
