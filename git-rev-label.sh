@@ -208,7 +208,7 @@ LONG=$( echo $long | tr a-z A-Z )
 count=$($GIT rev-list --count --first-parent ${BuildInfo_RevName:=HEAD})
 COUNT=$($GIT rev-list --count                ${BuildInfo_RevName:=HEAD})
 
-dirty=`$GIT diff --quiet || echo dirty`  # $GIT diff --quiet || dirty="dirty"
+dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
 _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
 DIRTY=$( echo $dirty | tr a-z A-Z )
 _DIRTY=$( echo $_dirty | tr a-z A-Z )
