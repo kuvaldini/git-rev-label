@@ -178,6 +178,7 @@ if var_is_set_not_empty action ;then
          install_dir=${install_dir:='/usr/local/bin'}
          install_dir=$(eval echo $install_dir)
          cp "${BASH_SOURCE[0]}" "$install_dir/git-rev-label"
+         chmod +x "$install_dir/git-rev-label"
          exit
          ;;
    esac
@@ -228,6 +229,8 @@ format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
 revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|defined $ENV{$1} ? $ENV{$1} : $&|eg' )
 
+########################################################
+########## Handle non-maintenance actions ##############
 
 function default_action {
    echo "$revision"
