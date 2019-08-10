@@ -168,7 +168,16 @@ done
 if var_is_set_not_empty action ;then
    case "$action" in
       --update|--update-script)
-         exec bash -c "curl 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -LsSf -o '${BASH_SOURCE[0]}'  &&  chmod +x '${BASH_SOURCE[0]}' "
+         TEMP=`mktemp`
+         curl 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -LsSf -o $TEMP
+         chmod +x $TEMP
+         if diff -q "${BASH_SOURCE[0]}" $TEMP ;then
+            exec mv $TEMP "${BASH_SOURCE[0]}"
+         else
+            echomsg "Already up to date."
+            rm -f $TEMP
+            exit
+         fi
          ;;
       --install-link)
          install_dir=${install_dir:='/usr/local/bin'}
@@ -224,7 +233,7 @@ else
 fi
 branch_=$branch$_dirty   # ${branch:+$branch$_dirty}
 
-refname=${tag+$branch}
+refname=${tag-$branch}
 format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
 revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|defined $ENV{$1} ? $ENV{$1} : $&|eg' )
