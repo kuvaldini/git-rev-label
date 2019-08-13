@@ -233,7 +233,7 @@ else
 fi
 branch_=$branch$_dirty   # ${branch:+$branch$_dirty}
 
-refname=${tag-$branch}
+refname=${tag:-$branch}
 format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
 revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|defined $ENV{$1} ? $ENV{$1} : $&|eg' )
