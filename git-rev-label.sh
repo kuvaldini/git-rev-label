@@ -13,6 +13,10 @@
 
 set -euo pipefail
 
+VERSION=000
+VERSION_NPM=0.0.0
+
+
 function echomsg               { echo $'\e[1;37m'"$@"$'\e[0m'; }
 function echodbg  { >/dev/stderr echo $'\e[0;36m'"$@"$'\e[0m'; }
 function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
@@ -83,9 +87,17 @@ AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 '
 }
 function --version {
-   echo "git-rev-label v1.1 https://gitlab.com/kyb/git-rev-label"
+   echo "git-rev-label v$VERSION_NPM 
+   $VERSION
+   https://gitlab.com/kyb/git-rev-label"
 }
--V(){ --version "$@"; }
+-V(){ echo "git-rev-label v$VERSION_NPM"; }
+function --rev-label {
+   echo "$VERSION"
+}
+--rev(){ --rev-label "$@"; }
+--version-npm(){ echo $VERSION_NPM; }
+--npm-version(){ --version-npm "$@"; }
 
 function --variables {
    var_is_unset_or_empty export  &&  export=  ||  export=export
@@ -120,8 +132,8 @@ while [[ $# > 0 ]] ;do
          --help
          exit
          ;;
-      --version|-V)
-         --version
+      --version|-V|--version-npm|--npm-version|--rev-label|--rev)
+         $1
          exit
          ;;
       --variables|--vars|-v|--install-link|--install|--install-script|--update|--update-script)  
