@@ -1,0 +1,219 @@
+image: alpine #registry.gitlab.com/kyb/git-rev-label/git-rev-label-builder-alpine
+## alpine with bash git openssh-client git-rev-label perl
+
+before_script:
+- function DEBUG { >&2 "$@" || true; }
+- set -o nounset -o pipefail
+- apk add --no-cache --update bash git openssh-client perl
+- wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-rev-label.sh?inline=false' -qO /tmp/git-rev-label.sh  &&  chmod +x /tmp/git-rev-label.sh && /tmp/git-rev-label.sh --install
+
+build:
+  stage: build
+  script:
+  - git checkout -B $CI_COMMIT_REF_NAME
+  - DEBUG git rev-label; DEBUG echo CI_PIPELINE_IID=$CI_PIPELINE_IID;
+  - ./BUILD
+  - echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
+  - git log -1 --format=%B >commit_message
+  artifacts:
+    paths: 
+    - "git-rev-label"
+    - "commit_message"
+
+.test:
+  stage: test
+  dependencies:
+  image: ubuntu
+  script:
+  #- git checkout -B $CI_COMMIT_REF_NAME
+  - apt-get update -qyy && apt install -qyy --no-install-recommends openssh-server openssh-client ca-certificates perl rsync fswatch
+  #- apk add --no-cache bash rsync fswatch openssh perl ca-certificates
+  #- /usr/bin/ssh-keygen -A  ## For Alpine only, not for Ubuntu
+  - ssh-keygen -o -t rsa -b 4096 -f ~/.ssh/id_rsa -P ""
+  - cat ~/.ssh/id_rsa.pub >>~/.ssh/authorized_keys; chmod 600 ~/.ssh/authorized_keys
+  - mkdir -p /run/sshd  ## Ubuntu only, fix a bug
+  - /usr/sbin/sshd
+  - ssh-keyscan -t rsa localhost >>~/.ssh/known_hosts; chmod 600 ~/.ssh/known_hosts
+  #- ssh -vv -oPasswordAuthentication=no localhost echo test
+  - cd test
+  - bash -x ./test-initial-sync.bash
+  - bash -x ./test-live-changes.bash
+  - bash -x ./test-sync-to-existing.bash || true  ## THIS SHOULD NOT FAIL!!! #10
+  - ps -a || true
+
+npm_publish:
+  stage: deploy
+  image: alpine
+  dependencies:
+  - build
+  variables:
+    #GIT_DEPTH: 1
+    NPM_PUBLISH_ATTEMPTS: 3
+  only:
+  - master
+  - npm_publish
+  before_script:  ## override global
+  - function DEBUG { >&2 "$@" || true; }
+  - set -o nounset -o pipefail
+  script:
+  - apk add --no-cache --update npm bash
+  - DEBUG echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
+  - VERSION_NPM="$( ./git-rev-label --version-npm )"
+  - echo -e '\e[1;37m'"$VERSION_NPM"'\e[0m'
+  - sed -i 's#"version":\s*".*"#"version":"'"$VERSION_NPM"'"#' package.json
+  - DEBUG cat package.json
+  - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >~/.npmrc  ## https://blog.npmjs.org/post/118393368555/deploying-with-npm-private-modules
+  - |-
+    echo NPM_PUBLISH_ATTEMPTS=$NPM_PUBLISH_ATTEMPTS
+    NPM_PUBLISH_ATTEMPTS=3
+    while test $NPM_PUBLISH_ATTEMPTS -gt 0 ; do
+      npm publish . && break ;
+      NPM_PUBLISH_ATTEMPTS=$( echo $NPM_PUBLISH_ATTEMPTS-1 | bc ) ;
+      sleep 4;
+    done
+  ## CHECK
+  - sleep 5
+  - npm install -g git-rev-label
+  - DEBUG ./git-rev-label --version
+  - DEBUG git-rev-label --version
+  - DEBUG which -a git-rev-label
+  - test "$(git-rev-label --version)" = "$(./git-rev-label --version)"
+
+
+## --- STORE ARTIFACTS TO A DEDICATED BRANCH ---
+store_artifacts:
+  stage: deploy
+  except:
+  - tags
+  dependencies:
+  - build
+  variables:
+    GIT_STRATEGY: none
+    GIT_USER_EMAIL: git-rev-label-ci@gitlab.com
+    GIT_USER_NAME: git-rev-label-ci
+  script:
+  ## --------- GET REV_LABEL ----------
+  - REV_LABEL=$(./git-rev-label --rev-label)
+  - echo -e $'\e[1;37m' "$REV_LABEL" $'\e[0m'
+  ## --------- URL --------------
+  - echo "$KI" >/tmp/ki  &&  chmod 400 /tmp/ki
+  - export GIT_SSH_COMMAND="ssh -i/tmp/ki -oStrictHostKeyChecking=no"
+  - SSH_URL=$(echo "$CI_REPOSITORY_URL" | perl -pe 's#https://(.+?):(.+?)@(.+?)/(.+?)\.git#git@\3:\4.git#' )
+  ## ---------- CLONE, ADD and COMMIT ---------------
+  - >
+    git clone "$SSH_URL" --depth 1 --single-branch -b artifacts/$CI_COMMIT_REF_NAME ./artifacts  ||  { 
+      git init artifacts && git -C artifacts checkout --orphan artifacts/$CI_COMMIT_REF_NAME; 
+    }
+  - echo >README.md.tmp  "## git-rev-label $REV_LABEL"
+  - >
+    for f in git-rev-label ;do 
+      F="$f.$REV_LABEL"; 
+      ln $f artifacts/$F || { 
+        echo >&2 "Forced ln $f"; 
+        ln -f $f artifacts/$F; 
+      }; 
+      git -C artifacts add $F; 
+      echo >>README.md.tmp  "[$F]($F)  "; 
+      ln -sf $F artifacts/$f  ## symlink to latest version
+    done
+  - echo -e >>README.md.tmp  "\n### Changelog\n$(cat commit_message)\n\n---\n"  
+  - cat artifacts/README.md >>README.md.tmp  || true
+  - mv README.md.tmp artifacts/README.md
+  - cd artifacts
+  - git add README.md
+  - DEBUG git status 
+  - git config --global user.email "$GIT_USER_EMAIL"
+  - git config --global user.name "$GIT_USER_NAME"
+  - git commit -m"$REV_LABEL
+    
+    $(cat commit_message)
+    "
+  ## ------------ PUSH --------------
+  - git push "$SSH_URL" HEAD:artifacts/$CI_COMMIT_REF_NAME
+  ## ----------- EPILOG -----------
+  - echo -e "See artifacts at \e[1;37m$CI_PROJECT_URL/tree/artifacts/$CI_COMMIT_REF_NAME\e[0m"
+
+
+## ToDo use git ls-remote. No fetch required. Much faster on a big repos! GIT_STRATEGY: none
+## git ls-remote --heads "$CI_REPOSITORY_URL" artifacts/\* | cut -d\t -f2 | sed 's#refs/heads/##'
+remove_stale_artifacts:
+  stage: deploy
+  dependencies:
+  #image: alpine
+  variables:
+    GIT_CHECKOUT: "false"
+    #ToDo GIT_STRATEGY: none
+    GIT_SUBMODULE_STRATEGY: none
+  script:
+  #- apk add --no-cache git perl openssh-client
+  - DEBUG whoami
+  - ln -sf $(mktemp -d) /temp  #- mkdir /temp  &&  mount -t tmpfs -o size=500m tmpfs /temp
+  ## --- FIND STALED ARTIFACTS BRANCHES ---
+  - git branch -r  --list origin/artifacts/\* | grep -v HEAD | sed -e s#origin/##g -Ee s#^\\s+##g >/temp/ARTIFACTS_BRANCHES
+  - DEBUG cat /temp/ARTIFACTS_BRANCHES
+  - git branch -r  --list origin/\*           | grep -v -e HEAD -e artifacts/| sed -e s#origin/##g -Ee s#^\\s+#artifacts/#g >/temp/BRANCHES
+  - DEBUG cat /temp/BRANCHES
+  - fgrep -vf /temp/BRANCHES /temp/ARTIFACTS_BRANCHES >/temp/STALE_ARTIFACTS_BRANCHES  ||  return 0
+  - DEBUG cat /temp/STALE_ARTIFACTS_BRANCHES
+  - PUSH_SPEC=$(sed -e 's#\s+##g' -e 's#^#:#g' /temp/STALE_ARTIFACTS_BRANCHES)
+  - DEBUG echo "$PUSH_SPEC"
+  ## --------- URL --------------
+  - echo "$KI" >/tmp/ki  &&  chmod 400 /tmp/ki
+  - export GIT_SSH_COMMAND="ssh -i/tmp/ki -oStrictHostKeyChecking=no"
+  - SSH_URL=$(echo "$CI_REPOSITORY_URL" | perl -pe 's#https://(.+?):(.+?)@(.+?)/(.+?)\.git#git@\3:\4.git#' )
+  - git push "$SSH_URL" $PUSH_SPEC
+  retry: 1  
+  
+
+releases_page:
+  stage: deploy
+  #extends: .tags_docker
+  image: alpine
+  variables:
+    GIT_CHECKOUT: "false"
+    GIT_STRATEGY: fetch
+    #GIT_DEPTH: 1
+  dependencies:
+  #- store_artifacts
+  #- build
+  only:
+  - master
+  - CI
+  - npm_publish
+  before_script:  ## override global
+  - function DEBUG { >&2 "$@" || true; }
+  - set -o nounset -o pipefail
+  script:
+  - apk add --no-cache curl jq bash git
+  ## --------- GET REV_LABEL ----------
+  - DEBUG ./git-rev-label --rev-label
+  - REV_LABEL=$(./git-rev-label --rev-label)
+  - echo -e $'\e[1;37m'"$REV_LABEL"$'\e[0m'
+  - >
+    JSON_REQ='{
+      "name": "'"$REV_LABEL"'",
+      "tag_name": "'"$REV_LABEL"'",
+      "ref": "'"$CI_COMMIT_SHA"'",
+      "description": "'"$(git log -1 "origin/$CI_COMMIT_REF_NAME" --format=%B)"'",
+      "assets": {
+        "links": [
+          {
+            "name": "Artifacts branch",
+            "url": "'"$CI_PROJECT_URL/tree/artifacts/$CI_COMMIT_REF_NAME"'"
+          },{
+            "name": "'"git-rev-label"'",
+            "url": "'"$CI_PROJECT_URL/raw/artifacts/$CI_COMMIT_REF_NAME/git-rev-label.$REV_LABEL"'"
+          }
+        ]
+      }
+    }'
+  - echo "$JSON_REQ" | jq  ## VALIDATE
+  - >-
+    curl --header "PRIVATE-TOKEN: $PRI_TOKEN" 
+    "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/releases" 
+    --header 'Content-Type: application/json' 
+    --data "$JSON_REQ"
+    --request POST
+    > /tmp/resp
+  - cat /tmp/resp | jq
+  - cat /tmp/resp | test "$(jq -r .name)" == "$REV_LABEL"  ## Assert the result

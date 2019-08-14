@@ -1,0 +1,27 @@
+{
+   "name": "git-rev-label",
+   "description": "Obtain information about Git repository revision in format like 'master-c73-gbbb6bec'",
+   "version": "$major.$commit.$build",
+   "homepage": "https://gitlab.com/kyb/git-rev-label",
+   "keywords": [
+     "git",
+     "rev",
+     "revision",
+     "versioning"
+   ],
+   "author": {
+      "name": "Ivan Kuvaldin",
+      "url": "https://gitlab.com/kyb"
+   },
+   "repository": {
+     "type": "git",
+     "url": "https://gitlab.com/kyb/git-rev-label"
+   },
+   "main": "./git-rev-label",
+   "bin": {
+      "git-rev-label": "./git-rev-label"
+   },
+   "scripts": {
+      "build":"./BUILD"
+   }
+}
