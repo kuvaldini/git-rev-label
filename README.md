@@ -1,3 +1,6 @@
+[![pipeline status](https://gitlab.com/kyb/git-rev-label/badges/master/pipeline.svg)](https://gitlab.com/kyb/git-rev-label/pipelines?scope=branches)
+
+
 # [git-rev-label](git-rev-label.sh) 
 ```
 wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
