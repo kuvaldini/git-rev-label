@@ -105,17 +105,25 @@ store_artifacts:
       git init artifacts && git -C artifacts checkout --orphan artifacts/$CI_COMMIT_REF_NAME; 
     }
   - echo >README.md.tmp  "## git-rev-label $REV_LABEL"
-  - >
+  - |-
+    (
+    xtrace_file=a;
+    mkfifo $xtrace_file;
+    exec 7<>$xtrace_file;  ## Keep open
+    { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
+    BASH_XTRACEFD=7;
+    set -x;
     for f in git-rev-label ;do 
       F="$f.$REV_LABEL"; 
       ln $f artifacts/$F || { 
         echo >&2 "Forced ln $f"; 
         ln -f $f artifacts/$F; 
-      }; 
-      git -C artifacts add $F; 
+      };
+      ln -f artifacts/$F artifacts/$f;  ## hard-link to latest version
+      git -C artifacts add $F $f; 
       echo >>README.md.tmp  "[$F]($F)  "; 
-      ln -sf $F artifacts/$f  ## symlink to latest version
-    done
+    done;
+    )
   - echo -e >>README.md.tmp  "\n### Changelog\n$(cat commit_message)\n\n---\n"  
   - cat artifacts/README.md >>README.md.tmp  || true
   - mv README.md.tmp artifacts/README.md
@@ -131,13 +139,15 @@ store_artifacts:
   ## ------------ PUSH --------------
   - git push "$SSH_URL" HEAD:artifacts/$CI_COMMIT_REF_NAME
   ## ----------- EPILOG -----------
-  - echo -e "See artifacts at \e[1;37m$CI_PROJECT_URL/tree/artifacts/$CI_COMMIT_REF_NAME\e[0m"
+  - echo -e "See artifacts at \n   \e[1;37m$CI_PROJECT_URL/tree/artifacts/$CI_COMMIT_REF_NAME\e[0m"
 
 
 ## ToDo use git ls-remote. No fetch required. Much faster on a big repos! GIT_STRATEGY: none
 ## git ls-remote --heads "$CI_REPOSITORY_URL" artifacts/\* | cut -d\t -f2 | sed 's#refs/heads/##'
 remove_stale_artifacts:
   stage: deploy
+  except:
+  - tags
   dependencies:
   #image: alpine
   variables:
