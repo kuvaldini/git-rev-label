@@ -5,8 +5,9 @@
 
 ## Download and Install
 ```
-wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label?inline=false' -qO git-rev-label  &&  bash ./git-rev-label --install
+wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && sudo bash ./git-rev-label --install
 ```
+*Warning: sudo under hood.*
 
 ## Usage
 For more info read comments in the script and look at the help section.
@@ -28,8 +29,8 @@ USAGE:
    eval $( git rev-label --variables [--export] )
 
 INSTALLATION:
-   wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
-   ./git-rev-label.sh --install|--install-link [--install-dir=/usr/local/bin]
+   wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && chmod +x git-rev-label 
+   ./git-rev-label --install|--install-link [--install-dir=/usr/local/bin]
 or simply make this script accessable in PATH as git-rev-label
    ln -s $PWD/git-rev-label.sh /usr/local/bin/git-rev-label
 
