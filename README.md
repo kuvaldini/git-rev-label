@@ -2,11 +2,13 @@
 
 
 # [git-rev-label](git-rev-label.sh) 
+
+## Download and Install
 ```
-wget 'https://gitlab.com/kyb/build-info-header/raw/master/git-rev-label.sh?inline=false' -qO git-rev-label.sh  &&  chmod +x git-rev-label.sh
-./git-rev-label.sh --help
-./git-rev-label.sh --install
+wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label?inline=false' -qO git-rev-label  &&  bash ./git-rev-label --install
 ```
+
+## Usage
 For more info read comments in the script and look at the help section.
 ```
 Gives information about Git repository revision in format like 'master-c73-gbbb6bec'.
