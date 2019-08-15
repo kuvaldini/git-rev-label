@@ -183,15 +183,9 @@ remove_stale_artifacts:
 
 releases_page:
   stage: deploy
-  #extends: .tags_docker
-  image: alpine
   variables:
     GIT_CHECKOUT: "false"
-    GIT_STRATEGY: fetch
-    #GIT_DEPTH: 1
-  dependencies:
-  #- store_artifacts
-  #- build
+  dependencies: #none
   only:
   - master
   - CI
@@ -274,3 +268,14 @@ homebrew:
   ## -- ToDo test with brew install git-rev-label
   
   
+.docker_images:
+  stage: build
+  variables:
+    GIT_DEPTH: 1
+  script:
+  - apk add --no-cache --update docker
+  - |-
+    for packset in build npm_publish store_artifacts remove_stale_artifacts releases_page full git-rev-label ;do
+      docker build -t registry.gitlab.com/kyb/git-rev-label/$packset --build-arg PACKAGE_SET=$packset . ;
+      docker push registry.gitlab.com/kyb/git-rev-label/$packset
+    done
