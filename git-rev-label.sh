@@ -113,9 +113,9 @@ function --variables {
    echo ${export} DIRTY=\'"$DIRTY"\'
    echo ${export} _DIRTY=\'"$_DIRTY"\'
    echo ${export} tag=\'"$tag"\'
-   echo ${export} tag_=\'"$tag_"\'
+   echo ${export} tag_dirty=\'"$tag_dirty"\'
    echo ${export} branch=\'"$branch"\'
-   echo ${export} branch_=\'"$branch_"\'
+   echo ${export} branch_dirty=\'"$branch_dirty"\'
    echo ${export} refname=\'"$refname"\'
    echo ${export} format=\'"$format"\'
    var_is_set revision  &&  echo ${export} revision=\'"$revision"\'
@@ -236,14 +236,14 @@ DIRTY=$( echo $dirty | tr a-z A-Z )
 _DIRTY=$( echo $_dirty | tr a-z A-Z )
 
 tag=$($GIT tag --list --points-at HEAD)
-tag_=${tag:+$tag$_dirty}
+tag_dirty=${tag:+$tag$_dirty}
 
 if [ -z $($GIT symbolic-ref HEAD -q) ]; then  # Check if HEAD is not a simbolic reference
    branch="DETACHED"
 else
    branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
 fi
-branch_=$branch$_dirty   # ${branch:+$branch$_dirty}
+branch_dirty=$branch$_dirty   # ${branch:+$branch$_dirty}
 
 refname=${tag:-$branch}
 format=${format:='$refname-c$count-g$short$_DIRTY'}
