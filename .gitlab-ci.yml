@@ -1,5 +1,9 @@
 image: alpine:latest
 
+variables:
+  GIT_USER_EMAIL: git-rev-label.ci@gitlab.com
+  GIT_USER_NAME: git-rev-label.ci
+    
 before_script:
 - function DEBUG { >&2 "$@" || true; }
 - set -o nounset -o pipefail
@@ -65,8 +69,6 @@ store_artifacts:
   - build
   variables:
     GIT_STRATEGY: none
-    GIT_USER_EMAIL: git-rev-label-ci@gitlab.com
-    GIT_USER_NAME: git-rev-label-ci
   script:
   - apk add --no-cache --update bash git openssh-client perl
   ## --------- GET REV_LABEL ----------
@@ -203,3 +205,44 @@ releases_page:
     > /tmp/resp
   - cat /tmp/resp | jq
   - cat /tmp/resp | test "$(jq -r .name)" == "$REV_LABEL"  ## Assert the result
+
+
+homebrew:
+  stage: deploy
+  dependencies:
+  - build
+  only:
+  - master
+  - homebrew
+  - CI
+  script:
+  - apk add bash git openssh-client perl
+  ## --------- GET REV_LABEL ----------
+  - REV_LABEL=$(./git-rev-label --rev-label)
+  - echo -e $'\e[1;37m' "$REV_LABEL" $'\e[0m'
+  ## ---
+  - sed -i -E 's#^(\s*url) .*#\1 '"'$CI_PROJECT_URL/raw/artifacts/$CI_COMMIT_REF_NAME/git-rev-label'"'#g'  homebrew/git-rev-label.rb
+  - sed -i -E 's#^(\s*sha256) .*#\1 '"'$(sha256sum ./git-rev-label | cut -f1 -d\ )'"'#g'  homebrew/git-rev-label.rb
+  - sed -i -E 's#^(\s*version) .*#\1 '"'$(./git-rev-label --version-npm)'"'#g'  homebrew/git-rev-label.rb
+  #- sed -i -E 's#^(\s*version) .*#\1 '"'$(./git-rev-label --rev-label)'"'#g'  homebrew/git-rev-label.rb
+  - DEBUG cat homebrew/git-rev-label.rb
+  - DEBUG git diff --color=always -- homebrew/git-rev-label.rb
+  ## ---
+  - git config --global user.email "$GIT_USER_EMAIL"
+  - git config --global user.name "$GIT_USER_NAME"
+  - chmod 400 $GITHUB_KI  &&  export GIT_SSH_COMMAND="ssh -i$GITHUB_KI -oStrictHostKeyChecking=no"
+  - git clone --depth 1 git@github.com:ivakyb/homebrew-git-rev-label.git
+  - ln -f homebrew/git-rev-label.rb homebrew-git-rev-label/git-rev-label.rb
+  - cd homebrew-git-rev-label
+  - DEBUG git diff --color=always -- git-rev-label.rb
+  - git commit -am"$REV_LABEL"
+  - git push 
+  ## -- as subrepo --
+  #- git subrepo push homebrew
+  ### --- as submodule ---
+  #- git -C homebrew push $SSH_URL HEAD:master
+  ## ToDo open pull request to homebrew-core
+  ## ---
+  ## -- ToDo test with brew install git-rev-label
+  
+  
