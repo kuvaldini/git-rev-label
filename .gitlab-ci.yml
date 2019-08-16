@@ -14,7 +14,12 @@ build:
   - apk add --no-cache --update bash git perl
   - wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -qO /tmp/git-rev-label  &&  bash /tmp/git-rev-label --install
   - git checkout -B $CI_COMMIT_REF_NAME
-  - DEBUG git rev-label; DEBUG echo CI_PIPELINE_IID=$CI_PIPELINE_IID;
+  - DEBUG git rev-label
+  - DEBUG echo CI_PIPELINE_IID=$CI_PIPELINE_IID;
+  ## --- Checkout previous binary to allow script BUILD detect BUILD_ID from it and increment.
+  - git fetch origin artifacts/$CI_COMMIT_REF_NAME || true
+  - git checkout origin/artifacts/$CI_COMMIT_REF_NAME -- git-rev-label
+  ## ---
   - ./BUILD
   - echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
   - git log -1 --format=%B >commit_message
@@ -134,7 +139,7 @@ remove_stale_artifacts:
     #ToDo GIT_STRATEGY: none  ## use ls-remote
     GIT_SUBMODULE_STRATEGY: none
   script:
-  - apk add --no-cache --update bash git openssh-client
+  - apk add --no-cache --update bash git openssh-client perl
   - ln -sf $(mktemp -d) /temp
   ## --- FIND STALED ARTIFACTS BRANCHES ---
   - git branch -r  --list origin/artifacts/\* | grep -v HEAD | sed -e s#origin/##g -Ee s#^\\s+##g >/temp/ARTIFACTS_BRANCHES
