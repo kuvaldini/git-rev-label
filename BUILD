@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-##ToDo may be use BUILD_ID=${CI_PIPELINE_IID}
-#if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then 
-#   #BUILD_ID=$(./git-rev-label --version | sed -E 's#.*-b([0-9]+).*#\1#')
-#   BUILD_ID=$(./git-rev-label --version | head -1 | sed -E 's#.*v[0-9]+\.[0-9]+\.([0-9]+).*#\1#')
-#   let BUILD_ID++
-#fi
-BUILD_ID=${CI_PIPELINE_IID}
+#BUILD_ID=${CI_PIPELINE_IID}  ## Do not use since CI_PIPELINE_IID provides unique job number inside project, because 
+if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then 
+   #BUILD_ID=$(./git-rev-label --version | sed -E 's#.*-b([0-9]+).*#\1#')  ## parse from 'master-c22-g234dca-b31'
+   BUILD_ID=$(./git-rev-label --version | head -1 | sed -E 's#.*v[0-9]+\.[0-9]+\.([0-9]+).*#\1#')  ## parse from '1.2.34'
+   let BUILD_ID++
+fi
 BUILD_ID=${BUILD_ID:=1}  ## fall back to 1
 
 sed -f <( cat<<'END'
