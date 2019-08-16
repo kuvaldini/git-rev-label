@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/ivakyb/homebrew-git-rev-label.git
+	branch = master
+	commit = a212f99dc1f0c4f724d01eac9d77d7e70e7e2216
+	parent = 2f39d063751f585231b35699445eadfdc0c1f44a
+	method = merge
+	cmdver = 0.4.0
