@@ -227,25 +227,27 @@ short=$($GIT rev-parse --short HEAD)
 SHORT=$( echo $short | tr a-z A-Z )
 long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
 LONG=$( echo $long | tr a-z A-Z )
-count=$($GIT rev-list --count --first-parent ${BuildInfo_RevName:=HEAD})
-COUNT=$($GIT rev-list --count                ${BuildInfo_RevName:=HEAD})
+count=$($GIT rev-list --count --first-parent HEAD )
+COUNT=$($GIT rev-list --count                HEAD )
 
 dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
 _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
 DIRTY=$( echo $dirty | tr a-z A-Z )
 _DIRTY=$( echo $_dirty | tr a-z A-Z )
 
-tag=$($GIT tag --list --points-at HEAD)
-tag_dirty=${tag:+$tag$_dirty}
+tag="$($GIT tag --list --points-at HEAD)"
+tag_dirty="${tag:+$tag$_dirty}"
 
 if [ -z $($GIT symbolic-ref HEAD -q) ]; then  # Check if HEAD is not a simbolic reference
    branch="DETACHED"
+   refname="${tag:-$branch}"
 else
    branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
+   refname="$branch"
 fi
-branch_dirty=$branch$_dirty   # ${branch:+$branch$_dirty}
+branch_dirty="$branch$_dirty"
+refname_dirty="$refname$_dirty"
 
-refname=${tag:-$branch}
 format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
 revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|defined $ENV{$1} ? $ENV{$1} : $&|eg' )
