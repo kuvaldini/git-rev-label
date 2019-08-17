@@ -33,15 +33,6 @@ build:
     git reset -- git-rev-label || true
   - DEBUG git log -1 --format=%B origin/artifacts/$CI_COMMIT_REF_NAME --
   - DEBUG git status
-#  ## ---
-#    #rm -f /tmp/xtrace_file;
-#    #XTRACE_COLOR="$(echo -e $'\e[32m')" NOCOLOR="$(echo -e $'\e[0m')"
-#  - >-
-#    mkfifo /tmp/xtrace_file;
-#    trap "rm -v /tmp/xtrace_file" EXIT;
-#    exec 7<>/tmp/xtrace_file;
-#    { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
-#    export BASH_XTRACEFD=7;
   - bash -x ./BUILD;
   - echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
   - git log -1 --format=%B >commit_message
