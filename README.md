@@ -1,3 +1,13 @@
+## git-rev-label master-c121-g447935e-b107
+[git-rev-label.master-c121-g447935e-b107](git-rev-label.master-c121-g447935e-b107)  
+
+### Changelog
+Clean gitlab-ci.yml after xtrace
+
+Merge branch 'clean-ci'
+
+---
+
 ## git-rev-label master-c120-gf967562-b106
 [git-rev-label.master-c120-gf967562-b106](git-rev-label.master-c120-gf967562-b106)  
 
