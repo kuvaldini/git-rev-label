@@ -5,8 +5,18 @@ variables:
   GIT_USER_NAME: git-rev-label.ci
     
 before_script:
+- echo -e "Fetch job trace with \n\e[1;3m   curl -H \"PRIVATE-TOKEN:xxxxx\" https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/jobs/$CI_JOB_ID/trace \e[0m"
 - function DEBUG { >&2 "$@" || true; }
 - set -o nounset -o pipefail
+## ---
+  #rm -f /tmp/xtrace_file;
+  #XTRACE_COLOR="$(echo -e $'\e[32m')" NOCOLOR="$(echo -e $'\e[0m')"
+- >-
+  mkfifo /tmp/xtrace_file;
+  trap "rm -v /tmp/xtrace_file" EXIT;
+  exec 7<>/tmp/xtrace_file;
+  { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
+  export BASH_XTRACEFD=7;
 
 build:
   stage: build
@@ -17,10 +27,22 @@ build:
   - DEBUG git rev-label
   - DEBUG echo CI_PIPELINE_IID=$CI_PIPELINE_IID;
   ## --- Checkout previous binary to allow script BUILD detect BUILD_ID from it and increment.
-  - git fetch origin artifacts/$CI_COMMIT_REF_NAME || true
-  - git checkout origin/artifacts/$CI_COMMIT_REF_NAME -- git-rev-label
-  ## ---
-  - ./BUILD
+  - >-
+    git fetch origin artifacts/$CI_COMMIT_REF_NAME &&
+    git checkout origin/artifacts/$CI_COMMIT_REF_NAME -- git-rev-label &&
+    git reset -- git-rev-label || true
+  - DEBUG git log -1 --format=%B origin/artifacts/$CI_COMMIT_REF_NAME --
+  - DEBUG git status
+#  ## ---
+#    #rm -f /tmp/xtrace_file;
+#    #XTRACE_COLOR="$(echo -e $'\e[32m')" NOCOLOR="$(echo -e $'\e[0m')"
+#  - >-
+#    mkfifo /tmp/xtrace_file;
+#    trap "rm -v /tmp/xtrace_file" EXIT;
+#    exec 7<>/tmp/xtrace_file;
+#    { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
+#    export BASH_XTRACEFD=7;
+  - bash -x ./BUILD;
   - echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
   - git log -1 --format=%B >commit_message
   artifacts:
@@ -93,6 +115,7 @@ store_artifacts:
     (
     xtrace_file=a;
     mkfifo $xtrace_file;
+    trap "rm -v $xtrace_file" EXIT
     exec 7<>$xtrace_file;  ## Keep open
     { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
     BASH_XTRACEFD=7;
@@ -146,7 +169,7 @@ remove_stale_artifacts:
   - DEBUG cat /temp/ARTIFACTS_BRANCHES
   - git branch -r  --list origin/\*           | grep -v -e HEAD -e artifacts/| sed -e s#origin/##g -Ee s#^\\s+#artifacts/#g >/temp/BRANCHES
   - DEBUG cat /temp/BRANCHES
-  - fgrep -vf /temp/BRANCHES /temp/ARTIFACTS_BRANCHES >/temp/STALE_ARTIFACTS_BRANCHES  ||  return 0
+  - fgrep -vf /temp/BRANCHES /temp/ARTIFACTS_BRANCHES >/temp/STALE_ARTIFACTS_BRANCHES  ||  { echo "No stale artifacts. Nothing to remove."; return 0; }
   - DEBUG cat /temp/STALE_ARTIFACTS_BRANCHES
   - PUSH_SPEC=$(sed -e 's#\s+##g' -e 's#^#:#g' /temp/STALE_ARTIFACTS_BRANCHES)
   - DEBUG echo "$PUSH_SPEC"
