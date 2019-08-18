@@ -223,7 +223,8 @@ fi
 GIT=${GIT:=git}
 #alias GIT="$GIT"
 
-short=$($GIT rev-parse --short HEAD)
+commit=$($GIT rev-parse --short HEAD)
+short=$commit
 SHORT=$( echo $short | tr a-z A-Z )
 long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
 LONG=$( echo $long | tr a-z A-Z )
