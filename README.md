@@ -1,3 +1,18 @@
+## git-rev-label master-c123-g8a3e4a5-b109
+[git-rev-label.master-c123-g8a3e4a5-b109](git-rev-label.master-c123-g8a3e4a5-b109)  
+
+### Changelog
+Better update
+
+Add variable $commit
+--update will follow symlink
+fix logic error in --update
+add --export-variables
+
+See merge request kyb/git-rev-label!4
+
+---
+
 ## git-rev-label master-c122-gdac7989-b108
 [git-rev-label.master-c122-gdac7989-b108](git-rev-label.master-c122-gdac7989-b108)  
 
