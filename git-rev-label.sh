@@ -96,6 +96,7 @@ function --rev-label {
 function --variables {
    var_is_unset_or_empty export  &&  export=  ||  export=export
    echo ${export} GIT=\'"$GIT"\'
+   echo ${export} commit=\'"$commit"\'
    echo ${export} short=\'"$short"\'
    echo ${export} SHORT=\'"$SHORT"\'
    echo ${export} long=\'"$long"\'
@@ -116,6 +117,9 @@ function --variables {
 }
 -v(){ --variables "$@"; }
 --vars(){ --variables "$@"; }
+--export-variables(){
+   export=1 --variables "$@"
+}
 
 ## Unset variables from environment
 unset format install_dir export
@@ -130,7 +134,7 @@ while [[ $# > 0 ]] ;do
          $1
          exit
          ;;
-      --variables|--vars|-v|--install-link|--install|--install-script|--update|--update-script)  
+      --variables|--vars|-v|--export-variables|--install-link|--install|--install-script|--update|--update-script)  
          var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
          ;;
@@ -183,12 +187,12 @@ if var_is_set_not_empty action ;then
          TEMP=`mktemp`
          curl 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -LsSf -o $TEMP
          chmod +x $TEMP
-         if diff -q "${BASH_SOURCE[0]}" $TEMP ;then
-            exec mv $TEMP "${BASH_SOURCE[0]}"
-         else
+         if diff -q "${BASH_SOURCE[0]}" $TEMP &>/dev/null ;then
             echomsg "Already up to date."
             rm -f $TEMP
             exit
+         else
+            exec mv $TEMP $(readlink -f "${BASH_SOURCE[0]}")
          fi
          ;;
       --install-link)
@@ -223,7 +227,8 @@ fi
 GIT=${GIT:=git}
 #alias GIT="$GIT"
 
-short=$($GIT rev-parse --short HEAD)
+commit=$($GIT rev-parse --short HEAD)
+short=$commit
 SHORT=$( echo $short | tr a-z A-Z )
 long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
 LONG=$( echo $long | tr a-z A-Z )
