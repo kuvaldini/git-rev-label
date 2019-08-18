@@ -5,7 +5,9 @@ set -eo pipefail
 if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then 
    BUILD_ID=$(./git-rev-label --rev-label | sed -E 's#.*-b([0-9]+).*#\1#')  ## parse from 'master-c22-g234dca-b31'
    #BUILD_ID=$(./git-rev-label --version-npm | sed -E 's#.*v[0-9]+\.[0-9]+\.([0-9]+).*#\1#')  ## parse from '1.2.34'
-   let BUILD_ID++
+   let BUILD_ID++ || {
+      echo >&2 'WARN: Failed to detect BUILD_ID. Count from 1.'
+   }
 fi
 BUILD_ID=${BUILD_ID:=1}  ## fall back to 1
 
