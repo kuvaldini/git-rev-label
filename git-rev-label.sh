@@ -183,12 +183,12 @@ if var_is_set_not_empty action ;then
          TEMP=`mktemp`
          curl 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -LsSf -o $TEMP
          chmod +x $TEMP
-         if diff -q "${BASH_SOURCE[0]}" $TEMP ;then
-            exec mv $TEMP $(readlink -f "${BASH_SOURCE[0]}")
-         else
+         if diff -q "${BASH_SOURCE[0]}" $TEMP &>/dev/null ;then
             echomsg "Already up to date."
             rm -f $TEMP
             exit
+         else
+            exec mv $TEMP $(readlink -f "${BASH_SOURCE[0]}")
          fi
          ;;
       --install-link)
