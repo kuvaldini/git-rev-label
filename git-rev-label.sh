@@ -161,6 +161,12 @@ while [[ $# > 0 ]] ;do
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$( cat ${1##--format-from=} )"
          ;;
+      -x|--trace|--xtrace)
+         set -x;
+         ;;
+      +x|--no-trace|--no-xtrace)
+         set +x;
+         ;;
       -*|--*) echowarn "!!! Unknown option $1";;
       *)
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
