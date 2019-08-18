@@ -96,6 +96,7 @@ function --rev-label {
 function --variables {
    var_is_unset_or_empty export  &&  export=  ||  export=export
    echo ${export} GIT=\'"$GIT"\'
+   echo ${export} commit=\'"$commit"\'
    echo ${export} short=\'"$short"\'
    echo ${export} SHORT=\'"$SHORT"\'
    echo ${export} long=\'"$long"\'
@@ -116,6 +117,9 @@ function --variables {
 }
 -v(){ --variables "$@"; }
 --vars(){ --variables "$@"; }
+--export-variables(){
+   export=1 --variables "$@"
+}
 
 ## Unset variables from environment
 unset format install_dir export
@@ -130,7 +134,7 @@ while [[ $# > 0 ]] ;do
          $1
          exit
          ;;
-      --variables|--vars|-v|--install-link|--install|--install-script|--update|--update-script)  
+      --variables|--vars|-v|--export-variables|--install-link|--install|--install-script|--update|--update-script)  
          var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
          action=$1 
          ;;
