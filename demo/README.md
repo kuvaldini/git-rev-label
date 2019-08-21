@@ -8,9 +8,9 @@ git rev-label
 git rev-label '$refname-c\$count-g\$short\$_dirty'
 
 ## Fill template header file to pass rev-label to C/C++
-git rev-label --format-from=build_info.template.h | tee build_info.h | lolcat -F 0.03
+git rev-label --format-from=build_info.template.h | lolcat -F 0.03
+cat build_info.h
 colordiff build_info.template.h build_info.h 
-#(git rev-label --format-file=build_info.template.h|psub)
 
 ## List variables filled by script, use them in --format
 git rev-label --variables
