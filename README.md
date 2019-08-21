@@ -2,16 +2,22 @@
 
 
 # [git-rev-label](git-rev-label.sh) 
+Gives information about Git repository revision in format like 'master-c73-gabc6bec'. 
+Can fill template string or file with environment variables and information from Git. 
+Useful to provide information about version of the program: branch, tag, commit hash, 
+commits count, dirty status, date and time. One of the most useful things is count of 
+commits, not taking into account merged branches - only first parent.
 
-## Download and Install
-```
-wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && sudo bash ./git-rev-label --install
-```
-*Warning: sudo under hood.*
+DEMO DEMO DEMO.gif
 
 ## Usage
-For more info read comments in the script and look at the help section.
 ```
+$ git rev-label
+master-c73-gbbb6bec
+```
+
+```
+$ git rev-label --help
 Gives information about Git repository revision in format like 'master-c73-gbbb6bec'.
 Can fill template string or file with environment variables and information from Git. 
 Useful to provide information about version of the program: branch, tag, commit hash, 
@@ -22,34 +28,64 @@ USAGE:
    git rev-label
    git rev-label [--help|-h|-?]
    git rev-label [--version|-V]
-   git rev-label '$refname-c$count-g$short$_dirty'
-   git rev-label --format='$refname-g$short$_dirty'
+   git rev-label '$refname-c\$count-g\$short\$_dirty'
+   git rev-label --format="`cat build_info.template.h`"
    git rev-label --format-file=build_info.template.h
    git rev-label --variables [--export]
    eval $( git rev-label --variables [--export] )
 
-INSTALLATION:
-   wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && chmod +x git-rev-label 
-   ./git-rev-label --install|--install-link [--install-dir=/usr/local/bin]
-or simply make this script accessable in PATH as git-rev-label
-   ln -s $PWD/git-rev-label.sh /usr/local/bin/git-rev-label
-
-UPDATE:
-   git rev-label --update
-or
-   wget 'https://gitlab.com/kyb/git-rev-label/raw/master/git-rev-label.sh?inline=false' -qO ~/bin/git-rev-label  &&  chmod +x ~/bin/git-rev-label
-
-USE CASES:
- * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status.
-   Than include result header to acces build information from code.
+COMPLEX USE CASE:
+ * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
+   Than include result header to access build information from code. 
    See https://gitlab.com/kyb/git-rev-label/blob/master/build_info.template.h and
    https://gitlab.com/kyb/git-rev-label/blob/master/create-build-info.sh
 
+INSTALLATION:
+   ./git-rev-label --install|--install-link [--install-dir=/usr/local/bin]
+
+UPDATE:
+   git rev-label --update
+
 More info at https://gitlab.com/kyb/git-rev-label
-AUTHOR kyb (Iva Kyb) https://gitlab.com/kyb
 ```
 
-## Install with [Homebrew](https://brew.sh)
+## Run witout install
+*  
+  ```
+  npx git-rev-label
+  ```
+* 
+  ``` 
+  docker run -it kyb/git-rev-label
+  ```
+
+## Install
+#### Manual
+```
+wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && sudo bash ./git-rev-label --install
+```
+*Warning: sudo under hood.*  
+
+Without sudo, install to `$HOME/bin`:
+```
+wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && 
+  bash ./git-rev-label --install --install-dir=$HOME/bin
+```
+
+Make sure `$HOME/bin` is in `$PATH`:
+* bash  
+  ```
+  [[ ":$PATH:" != *":$HOME/bin:"* ]] && PATH="$HOME/bin:$PATH"
+  ```
+* fish  
+  ```
+  set --export --universal fish_user_paths ~/bin $fish_user_paths
+  ```
+
+#### with [NPM](https://npm.org)
+    npm install --global git-rev-label
+
+#### with [Homebrew](https://brew.sh)
 ```
 brew tap ivakyb/git-rev-label
 brew install git-rev-label

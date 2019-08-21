@@ -142,6 +142,16 @@ while [[ $# > 0 ]] ;do
          var_is_set install_dir  && echowarn "!!! install_dir already set to '$install_dir'. Overriding"
          install_dir="${1##--install-dir=}"
          ;;
+      --install=*)  ## same as --install --install-dir=path/to/
+         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
+         action=--install
+         install_dir="${1##--install=}"
+         ;;
+      --install-link=*)  ## same as --install-link --install-dir=path/to/
+         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
+         action=--install-link
+         install_dir="${1##--install-link=}"
+         ;;
       --force|-f)
          force=f
          ;;
@@ -170,6 +180,12 @@ while [[ $# > 0 ]] ;do
          ;;
       +x|--no-trace|--no-xtrace)
          set +x;
+         ;;
+      --debug|-D)  ## Allow echodbg messages, also works if DEBUG is set in environment
+         DEBUG=y
+         ;;
+      --no-debug)  ## Allow echodbg messages, also works if DEBUG is set in environment
+         unset DEBUG
          ;;
       -*|--*) echowarn "!!! Unknown option $1";;
       *)
