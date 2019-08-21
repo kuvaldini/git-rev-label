@@ -1,3 +1,15 @@
+## git-rev-label master-c124-g34509a0-b110
+[git-rev-label.master-c124-g34509a0-b110](git-rev-label.master-c124-g34509a0-b110)  
+
+### Changelog
+Better README
+
+Add --install=/path/to/, --install-link=, --debug
+
+See merge request kyb/git-rev-label!5
+
+---
+
 ## git-rev-label master-c123-g8a3e4a5-b109
 [git-rev-label.master-c123-g8a3e4a5-b109](git-rev-label.master-c123-g8a3e4a5-b109)  
 
