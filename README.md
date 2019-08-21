@@ -1,3 +1,13 @@
+## git-rev-label master-c125-g53a9da1-b111
+[git-rev-label.master-c125-g53a9da1-b111](git-rev-label.master-c125-g53a9da1-b111)  
+
+### Changelog
+CI: docker_images
+
+See merge request kyb/git-rev-label!6
+
+---
+
 ## git-rev-label master-c124-g34509a0-b110
 [git-rev-label.master-c124-g34509a0-b110](git-rev-label.master-c124-g34509a0-b110)  
 
