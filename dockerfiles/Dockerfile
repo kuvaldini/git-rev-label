@@ -19,5 +19,3 @@ RUN case $PACKAGE_SET in \
 RUN case "$PACKAGE_SET" in build|git-rev-label|full) \
         wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && bash ./git-rev-label --install ;\
     esac
-
-ENTRYPOINT bash
