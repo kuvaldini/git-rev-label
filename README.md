@@ -1,3 +1,13 @@
+## git-rev-label master-c126-gfa4724d-b112
+[git-rev-label.master-c126-gfa4724d-b112](git-rev-label.master-c126-gfa4724d-b112)  
+
+### Changelog
+Dockerfile: remove entrypoint, README: alias through docker
+
+See merge request kyb/git-rev-label!7
+
+---
+
 ## git-rev-label master-c125-g53a9da1-b111
 [git-rev-label.master-c125-g53a9da1-b111](git-rev-label.master-c125-g53a9da1-b111)  
 
