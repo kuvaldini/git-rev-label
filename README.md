@@ -56,8 +56,13 @@ More info at https://gitlab.com/kyb/git-rev-label
   ```
 * 
   ``` 
-  docker run -it kyb/git-rev-label
+  docker run -it ikyb/git-rev-label
   ```
+  If wanna run always in container
+  ```
+  alias git-rev-label='docker run -it --rm -v"$PWD":"$PWD" -w"$PWD" ikyb/git-rev-label git-rev-label '
+  ```
+  or create executable file git-rev-label in PATH with the same contents.
 
 ## Install
 #### Manual
