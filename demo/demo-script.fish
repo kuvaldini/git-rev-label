@@ -22,9 +22,9 @@ git rev-label
 git checkout HEAD^
 git rev-label
 ## count -1, DETACHED and DIRTY
-git commit a -m"add a"
+git add a && git commit -m"add a"
 git status
-git tag brantozyabra
+git tag -f brantozyabra
 git rev-label
 ## count +1, no dirty status
 ## $tag is used because of detached state
