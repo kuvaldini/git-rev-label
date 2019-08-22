@@ -10,6 +10,9 @@ commits, not taking into account merged branches - only first parent.
 
 DEMO DEMO DEMO.gif
 
+![[](https://asciinema.org/a/li8MyPUwOfaS5T9GmxjbZXQeV)](demo/demo-part2.gif)
+
+
 ## Usage
 ```
 $ git rev-label
