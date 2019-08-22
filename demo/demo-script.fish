@@ -1,10 +1,11 @@
 #!/usr/bin/env fish
 
 ## PART 1
-## Basic features
+## Common features
 git rev-label --version
 git-rev-label --help
 
+## Basic features
 git rev-label
 git rev-label '$refname-c\$count-g\$short\$_dirty'
 git rev-label --format='$branch-C\$COUNT-g\$LONG\$_DIRTY'
@@ -16,8 +17,8 @@ git status
 ## clean
 echo a >a
 git status
-## dirty
 git rev-label
+## dirty
 git checkout HEAD^
 git rev-label
 ## count -1, DETACHED and DIRTY
