@@ -31,19 +31,18 @@ git rev-label
 
 
 ## PART 3
-## List variables provided by script
+## List available variables and fill template file
 git rev-label --variables
-## Use them in --format string
+## Use them in --format=string
 
 ## Also can take variables from environment
 env A="lovely World" B="git-rev-label" git rev-label 'Hello, my $A, from $B $refname. Here is $unset variable.'
 
 ## Fill template header file to pass rev-label to C/C++
 cd build_info-header
-git rev-label --format-from=build_info.template.h | tee build_info.h | lolcat -F 0.03
-colordiff build_info{.template,}.h
+git rev-label --format-from=build_info.template.h | tee build_info.h | lolcat -F 0.02
+colordiff build_info{.template,}.h --side-by-side
 ## Variable placeholders were filled
-cd -
 
 
 ## PART 4
