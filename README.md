@@ -1,3 +1,15 @@
+## git-rev-label master-c127-g93fc2e9-b113
+[git-rev-label.master-c127-g93fc2e9-b113](git-rev-label.master-c127-g93fc2e9-b113)  
+
+### Changelog
+Demo
+
+Created with asciinema and svg-term-cli
+
+See merge request kyb/git-rev-label!8
+
+---
+
 ## git-rev-label master-c126-gfa4724d-b112
 [git-rev-label.master-c126-gfa4724d-b112](git-rev-label.master-c126-gfa4724d-b112)  
 
