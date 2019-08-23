@@ -8,7 +8,12 @@ Useful to provide information about version of the program: branch, tag, commit 
 commits count, dirty status, date and time. One of the most useful things is count of 
 commits, not taking into account merged branches - only first parent.
 
-DEMO DEMO DEMO.gif
+### Part 2 – Walk over git commits and show how rev-label detects branch, tag, detached and dirty states
+[ ![](demo/demo-part2-walk-over-commits.gif) ](https://asciinema.org/a/li8MyPUwOfaS5T9GmxjbZXQeV)  
+
+### Part 3 – List available variables and fill template file
+[ ![](demo/demo-part3-variables-and-template.svg) ](https://asciinema.org/a/MZJ7joO22DwPFS7Uwyru5Zs8e)
+
 
 ## Usage
 ```
