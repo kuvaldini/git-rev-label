@@ -1,3 +1,15 @@
+## git-rev-label master-c129-ge3d379f-b115
+[git-rev-label.master-c129-ge3d379f-b115](git-rev-label.master-c129-ge3d379f-b115)  
+
+### Changelog
+Issue #10: expand variables in curly braces.
+
+https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
+
+See merge request kyb/git-rev-label!12
+
+---
+
 ## git-rev-label master-c128-ga61cd81-b114
 [git-rev-label.master-c128-ga61cd81-b114](git-rev-label.master-c128-ga61cd81-b114)  
 
