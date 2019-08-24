@@ -41,12 +41,12 @@ sed -f <( cat<<'END'
 END
 ) git-rev-label.sh >git-rev-label
 
-VERSION="$(git rev-label --format='$refname-c$count-g$short'-b$BUILD_ID\$_dirty --since=2019-08-23 )"
+VERSION="$(git rev-label --format='$refname-c$count-g$short'-b$BUILD_ID\$_dirty --from=master-c129-ge3d379f-b115 )"
 echo $VERSION
 sed -i "s#VERSION=000#VERSION=$VERSION#" git-rev-label
 
 #VERSION_NPM="$(echo $VERSION | sed -nE 's#.*c([0-9]+)-g(.[0-9a-f]+)-b([0-9]+).*#'$VER_MAJ'.\1.\3#p' )"
-VERSION_NPM="$(git rev-label --format=$VER_MAJ.\$count.$BUILD_ID --since=2019-08-23 )"
+VERSION_NPM="$(git rev-label --format=$VER_MAJ.\$count.$BUILD_ID --from=master-c129-ge3d379f-b115 )"
 sed -i "s#VERSION_NPM=0.0.0#VERSION_NPM=$VERSION_NPM#" git-rev-label
 
 chmod +x git-rev-label
