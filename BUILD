@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-VER_MAJ=${VER_MAJ:=2}
+current_branch(){
+   git rev-parse --abbrev-ref HEAD
+}
+
+if test "`current_branch`" == master ;then
+   VER_MAJ=${VER_MAJ:=2}
+else
+   VER_MAJ=${VER_MAJ:=0}
+fi
 
 #BUILD_ID=${CI_PIPELINE_IID}  ## Do not use since CI_PIPELINE_IID provides unique job number inside project, because 
 if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then 
