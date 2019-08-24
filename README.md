@@ -1,3 +1,15 @@
+## git-rev-label master-c130-ga9438bd-b1
+[git-rev-label.master-c130-ga9438bd-b1](git-rev-label.master-c130-ga9438bd-b1)  
+
+### Changelog
+Major version 2 for master, and 0 for non-master
+
+and count commits beginning from tag master-c129-ge3d379f-b115 to reset subversion.
+
+See merge request kyb/git-rev-label!11
+
+---
+
 ## git-rev-label master-c129-ge3d379f-b115
 [git-rev-label.master-c129-ge3d379f-b115](git-rev-label.master-c129-ge3d379f-b115)  
 
