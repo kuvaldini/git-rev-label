@@ -275,7 +275,7 @@ refname_dirty="$refname$_dirty"
 
 format=${format:='$refname-c$count-g$short$_DIRTY'}
 eval "`export=export --variables`"
-revision=$( echo "$format" | perl -pe 's|\$([A-Za-z_]+)|defined $ENV{$1} ? $ENV{$1} : $&|eg' )
+revision=$( echo "$format" | perl -pe's#\$(?:([A-Za-z_]+)|\{([A-Za-z_]+)\})#$ENV{$1//$2}//$&#eg' )  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
 
 ########################################################
 ########## Handle non-maintenance actions ##############
