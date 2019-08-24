@@ -1,3 +1,15 @@
+## git-rev-label master-c128-ga61cd81-b114
+[git-rev-label.master-c128-ga61cd81-b114](git-rev-label.master-c128-ga61cd81-b114)  
+
+### Changelog
+Add option --since=date
+
+This option is passed to git-rev-list when detecting 'count'.
+
+See merge request kyb/git-rev-label!10
+
+---
+
 ## git-rev-label master-c127-g93fc2e9-b113
 [git-rev-label.master-c127-g93fc2e9-b113](git-rev-label.master-c127-g93fc2e9-b113)  
 
