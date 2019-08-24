@@ -187,6 +187,10 @@ while [[ $# > 0 ]] ;do
       --no-debug)  ## Allow echodbg messages, also works if DEBUG is set in environment
          unset DEBUG
          ;;
+      --since=*)  ## passed to git rev-list when calculating $count
+         var_is_set since  && echowarn "!!! since already set to '$since'. Overriding"
+         since="${1##--since=}"
+         ;;
       -*|--*) echowarn "!!! Unknown option $1";;
       *)
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
@@ -248,8 +252,8 @@ short=$commit
 SHORT=$( echo $short | tr a-z A-Z )
 long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
 LONG=$( echo $long | tr a-z A-Z )
-count=$($GIT rev-list --count --first-parent HEAD )
-COUNT=$($GIT rev-list --count                HEAD )
+count=$($GIT rev-list --count ${since:+--since=$since} --first-parent HEAD )
+COUNT=$($GIT rev-list --count ${since:+--since=$since}                HEAD )
 
 dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
 _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
