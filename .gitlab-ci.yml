@@ -77,7 +77,8 @@ npm_publish:
       npm publish . && break ;
       NPM_PUBLISH_ATTEMPTS=$( echo $NPM_PUBLISH_ATTEMPTS-1 | bc ) ;
       sleep 4;
-    done
+    done;
+    test $NPM_PUBLISH_ATTEMPTS -eq 0  &&  exit 1;
   ## CHECK
   - sleep 5
   - npm install -g git-rev-label
