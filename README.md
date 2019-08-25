@@ -1,3 +1,13 @@
+## git-rev-label master-c133-g7495205-b2
+[git-rev-label.master-c133-g7495205-b2](git-rev-label.master-c133-g7495205-b2)  
+
+### Changelog
+Unknown option is fatal error
+
+See merge request kyb/git-rev-label!14
+
+---
+
 ## git-rev-label master-c132-g324bb34-b2
 [git-rev-label.master-c132-g324bb34-b2](git-rev-label.master-c132-g324bb34-b2)  
 
