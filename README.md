@@ -1,3 +1,11 @@
+## git-rev-label master-c2-g6cd9fd2-b2
+[git-rev-label.master-c2-g6cd9fd2-b2](git-rev-label.master-c2-g6cd9fd2-b2)  
+
+### Changelog
+Update README.md: Usage
+
+---
+
 ## git-rev-label master-c1-g51f5db6-b1
 [git-rev-label.master-c1-g51f5db6-b1](git-rev-label.master-c1-g51f5db6-b1)  
 
