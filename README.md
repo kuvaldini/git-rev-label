@@ -1,3 +1,13 @@
+## git-rev-label master-c132-g324bb34-b2
+[git-rev-label.master-c132-g324bb34-b2](git-rev-label.master-c132-g324bb34-b2)  
+
+### Changelog
+Add option --from=*
+
+See merge request kyb/git-rev-label!18
+
+---
+
 ## git-rev-label master-c130-ga9438bd-b1
 [git-rev-label.master-c130-ga9438bd-b1](git-rev-label.master-c130-ga9438bd-b1)  
 
