@@ -18,8 +18,16 @@ before_script:
   { while read -u7; do echo -e $'\e[32m'"$REPLY"$'\e[0m'; done; } &
   export BASH_XTRACEFD=7;
 
+.retry:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
 build:
   stage: build
+  extends: .retry
   script:
   - apk add --no-cache --update bash git perl
   - wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -qO /tmp/git-rev-label  &&  bash /tmp/git-rev-label --install
@@ -53,6 +61,7 @@ npm_publish:
   only:
   - master
   - npm_publish
+  extends: .retry
   script:
   - apk add --no-cache --update npm bash
   - DEBUG echo -e '\e[1;37m'"$(./git-rev-label --version)"'\e[0m'
@@ -87,6 +96,7 @@ store_artifacts:
   - build
   variables:
     GIT_STRATEGY: none
+  extends: .retry
   script:
   - apk add --no-cache --update bash git openssh-client perl
   ## --------- GET REV_LABEL ----------
@@ -152,6 +162,7 @@ remove_stale_artifacts:
     GIT_CHECKOUT: "false"
     #ToDo GIT_STRATEGY: none  ## use ls-remote
     GIT_SUBMODULE_STRATEGY: none
+  extends: .retry
   script:
   - apk add --no-cache --update bash git openssh-client perl
   - ln -sf $(mktemp -d) /temp
@@ -181,6 +192,7 @@ releases_page:
   - master
   - CI
   - releases_page
+  extends: .retry
   script:
   - apk add --no-cache curl jq bash git
   ## --------- GET REV_LABEL ----------
@@ -228,6 +240,7 @@ homebrew:
   - master
   - homebrew
   - CI
+  extends: .retry
   script:
   - apk add bash git openssh-client perl
   ## --------- GET REV_LABEL ----------
@@ -272,6 +285,7 @@ docker_images:
   - ci-docker-images
   variables:
     GIT_DEPTH: 1
+  extends: .retry
   script:
   - docker info
   - echo "${CI_REGISTRY_PASSWORD}" | docker login registry.gitlab.com -u "${CI_REGISTRY_USER}" --password-stdin
