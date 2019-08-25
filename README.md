@@ -1,3 +1,17 @@
+## git-rev-label master-c1-g51f5db6-b1
+[git-rev-label.master-c1-g51f5db6-b1](git-rev-label.master-c1-g51f5db6-b1)  
+
+### Changelog
+Increment major version to 2
+
+Non-master branches got version 0.
+Minor version is a commit count begining from tag 'master-c129-ge3d379f-b115'
+Therefor after this commit is merged to master version should be 2.1.1
+
+See merge request kyb/git-rev-label!17
+
+---
+
 ## git-rev-label master-c133-g7495205-b2
 [git-rev-label.master-c133-g7495205-b2](git-rev-label.master-c133-g7495205-b2)  
 
