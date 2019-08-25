@@ -21,6 +21,7 @@ function echomsg               { echo $'\e[1;37m'"$@"$'\e[0m'; }
 function echodbg  { >/dev/stderr echo $'\e[0;36m'"$@"$'\e[0m'; }
 function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
 function echoerr  { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; }
+function fatalerr { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; exit 1; }
 
 function OnErr {  caller | { read lno file; echoerr ">ERR in $file:$lno" >&2; };  }
 trap OnErr ERR
@@ -195,7 +196,7 @@ while [[ $# > 0 ]] ;do
          var_is_set from  && echowarn "!!! 'from' has been already set to '$from'. Overriding"
          from="${1##--from=}"
          ;;
-      -*|--*) echowarn "!!! Unknown option $1";;
+      -*|--*) fatalerr "!!! Unknown option $1";;
       *)
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$1"
