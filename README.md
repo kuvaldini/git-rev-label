@@ -1,4 +1,5 @@
 [![pipeline status](https://gitlab.com/kyb/git-rev-label/badges/master/pipeline.svg)](https://gitlab.com/kyb/git-rev-label/pipelines?scope=branches)
+[![releases](https://img.shields.io/badge/git--rev--label-releases-green.svg?style=flat)](https://gitlab.com/kyb/git-rev-label/-/releases)
 
 
 # [git-rev-label](git-rev-label.sh) 
