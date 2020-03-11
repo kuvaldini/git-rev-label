@@ -1,3 +1,11 @@
+## git-rev-label build_info-c5-g5f9b984-b3
+[git-rev-label.build_info-c5-g5f9b984-b3](git-rev-label.build_info-c5-g5f9b984-b3)  
+
+### Changelog
+simplify create-build-info.sh
+
+---
+
 ## git-rev-label build_info-c4-g43cbe62-b2
 [git-rev-label.build_info-c4-g43cbe62-b2](git-rev-label.build_info-c4-g43cbe62-b2)  
 
