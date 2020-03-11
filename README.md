@@ -1,3 +1,15 @@
+## git-rev-label master-c3-g0481eb6-b3
+[git-rev-label.master-c3-g0481eb6-b3](git-rev-label.master-c3-g0481eb6-b3)  
+
+### Changelog
+Merge branch 'badges' into 'master'
+
+Add badge releases to README.md
+
+See merge request kyb/git-rev-label!22
+
+---
+
 ## git-rev-label master-c2-g6cd9fd2-b2
 [git-rev-label.master-c2-g6cd9fd2-b2](git-rev-label.master-c2-g6cd9fd2-b2)  
 
