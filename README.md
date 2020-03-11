@@ -1,3 +1,15 @@
+## git-rev-label master-c4-g784872b-b3
+[git-rev-label.master-c4-g784872b-b3](git-rev-label.master-c4-g784872b-b3)  
+
+### Changelog
+Merge branch 'dont_fail_ext_pipelines' into 'master'
+
+Do not fail external pipelines store_artifacts:only:variables:$KI
+
+See merge request kyb/git-rev-label!24
+
+---
+
 ## git-rev-label master-c3-g0481eb6-b3
 [git-rev-label.master-c3-g0481eb6-b3](git-rev-label.master-c3-g0481eb6-b3)  
 
