@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-VERSION=000
+VERSION=master-cX-gXXXXXXXX-bB
 VERSION_NPM=0.0.0
 
 
@@ -63,6 +63,7 @@ USAGE:
    git rev-label '"'"'$refname-c\$count-g\$short\$_dirty'"'"'
    git rev-label --format="`cat build_info.template.h`"
    git rev-label --format-file=build_info.template.h
+   git rev-label --format-from=version-template.json  ## Alias to --format-file
    git rev-label --variables [--export]
    eval $( git rev-label --variables [--export] )
 
@@ -95,32 +96,10 @@ function --rev-label {
 --npm-version(){ --version-npm "$@"; }
 
 function --variables {
-   var_is_unset_or_empty export  &&  export=  ||  export=export
-   echo ${export} GIT=\'"$GIT"\'
-   echo ${export} commit=\'"$commit"\'
-   echo ${export} short=\'"$short"\'
-   echo ${export} SHORT=\'"$SHORT"\'
-   echo ${export} long=\'"$long"\'
-   echo ${export} LONG=\'"$LONG"\'
-   echo ${export} count=\'"$count"\'
-   echo ${export} COUNT=\'"$COUNT"\'
-   echo ${export} dirty=\'"$dirty"\'
-   echo ${export} _dirty=\'"$_dirty"\'
-   echo ${export} DIRTY=\'"$DIRTY"\'
-   echo ${export} _DIRTY=\'"$_DIRTY"\'
-   echo ${export} tag=\'"$tag"\'
-   echo ${export} tag_dirty=\'"$tag_dirty"\'
-   echo ${export} branch=\'"$branch"\'
-   echo ${export} branch_dirty=\'"$branch_dirty"\'
-   echo ${export} refname=\'"$refname"\'
-   echo ${export} format=\'"$format"\'
-   var_is_set revision  &&  echo ${export} revision=\'"$revision"\'
+   echoerr "implemented below"
 }
 -v(){ --variables "$@"; }
 --vars(){ --variables "$@"; }
---export-variables(){
-   export=1 --variables "$@"
-}
 
 ## Unset variables from environment
 unset format install_dir export
@@ -171,6 +150,9 @@ while [[ $# > 0 ]] ;do
       --format-file=*)
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
          format="$( cat ${1##--format-file=} )"
+         ;;
+      --format-from)
+         fatalerr "option --format-from requires value"
          ;;
       --format-from=*)  ## Alias to --format-file
          var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
@@ -246,41 +228,47 @@ if test -z "$format" ;then
 fi
 
 #####################################################
-########## SET git rev-label VARIABLES ###############
+########## SET git rev-label VARIABLES ##############
 ######### Quintessence (quīnta essentia) ############
 
+##ToDo calculate only requested variables - first of all parse template, detect required vars, calculate them.
+
 GIT=${GIT:=git}
-#alias GIT="$GIT"
+env_before="$(env)"
 
-commit=$($GIT rev-parse --short HEAD)
-short=$commit
-SHORT=$( echo $short | tr a-z A-Z )
-long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
-LONG=$( echo $long | tr a-z A-Z )
-count=$($GIT rev-list --count ${since:+--since=$since} --first-parent ${from:+$from..}HEAD )
-COUNT=$($GIT rev-list --count ${since:+--since=$since}                ${from:+$from..}HEAD )
+export commit=$($GIT rev-parse --short HEAD)
+export short=$commit
+export SHORT=$( echo $short | tr a-z A-Z )
+export long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
+export LONG=$( echo $long | tr a-z A-Z )
+export count=$($GIT rev-list --count ${since:+--since=$since} --first-parent ${from:+$from..}HEAD )
+export COUNT=$($GIT rev-list --count ${since:+--since=$since}                ${from:+$from..}HEAD )
 
-dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
-_dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
-DIRTY=$( echo $dirty | tr a-z A-Z )
-_DIRTY=$( echo $_dirty | tr a-z A-Z )
+export dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
+export _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
+export DIRTY=$( echo $dirty | tr a-z A-Z )
+export _DIRTY=$( echo $_dirty | tr a-z A-Z )
 
-tag="$($GIT tag --list --points-at HEAD)"
-tag_dirty="${tag:+$tag$_dirty}"
+export tag="$($GIT tag --list --points-at HEAD)"
+export tag_dirty="${tag:+$tag$_dirty}"
 
 if [ -z $($GIT symbolic-ref HEAD -q) ]; then  # Check if HEAD is not a simbolic reference
-   branch="DETACHED"
-   refname="${tag:-$branch}"
+   export branch="DETACHED"
+   export refname="${tag:-$branch}"
 else
-   branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
-   refname="$branch"
+   export branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
+   export refname="$branch"
 fi
-branch_dirty="$branch$_dirty"
-refname_dirty="$refname$_dirty"
+export branch_dirty="$branch$_dirty"
+export refname_dirty="$refname$_dirty"
 
-format=${format:='$refname-c$count-g$short$_DIRTY'}
-eval "`export=export --variables`"
-revision=$( echo "$format" | perl -pe's#\$(?:([A-Za-z_]+)|\{([A-Za-z_]+)\})#$ENV{$1//$2}//$&#eg' )  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
+env_after="$(env)"
+--variables(){
+   comm -13 <(sort -u <<<"$env_before") <(sort -u <<<"$env_after")
+}
+
+##ToDo do not expand escaped dolllar sign \$
+export revision=$( echo "$format" | perl -pe's#\$(?:([A-Za-z_]+)|\{([A-Za-z_]+)\})#$ENV{$1//$2}//$&#eg' )  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
 
 ########################################################
 ########## Handle non-maintenance actions ##############
