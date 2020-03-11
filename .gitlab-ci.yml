@@ -97,6 +97,9 @@ store_artifacts:
   - tags
   dependencies:
   - build
+  only:
+    variables:
+      - $KI
   variables:
     GIT_STRATEGY: none
   extends: .retry
