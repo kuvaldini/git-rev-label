@@ -1,3 +1,15 @@
+## git-rev-label master-cX-gXXXXXXXX-bB
+[git-rev-label.master-cX-gXXXXXXXX-bB](git-rev-label.master-cX-gXXXXXXXX-bB)  
+
+### Changelog
+Merge branch 'fix_quotes' into 'master'
+
+Fix quotes disappering after expanding format
+
+See merge request kyb/git-rev-label!25
+
+---
+
 ## git-rev-label master-c4-g784872b-b3
 [git-rev-label.master-c4-g784872b-b3](git-rev-label.master-c4-g784872b-b3)  
 
