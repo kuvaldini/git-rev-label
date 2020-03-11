@@ -246,11 +246,12 @@ if test -z "$format" ;then
 fi
 
 #####################################################
-########## SET git rev-label VARIABLES ###############
+########## SET git rev-label VARIABLES ##############
 ######### Quintessence (quīnta essentia) ############
 
+##ToDo calculate only requested variables - first of all parse template, detect required vars, calculate them.
+
 GIT=${GIT:=git}
-#alias GIT="$GIT"
 
 commit=$($GIT rev-parse --short HEAD)
 short=$commit
