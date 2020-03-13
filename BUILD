@@ -11,8 +11,8 @@ else
    VER_MAJ=${VER_MAJ:=0}
 fi
 
-#BUILD_ID=${CI_PIPELINE_IID}  ## Do not use since CI_PIPELINE_IID provides unique job number inside project, because 
-if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then 
+#BUILD_ID=${CI_PIPELINE_IID}  ## Do not use since CI_PIPELINE_IID provides unique job number inside project, because
+if test -x ./git-rev-label  &&  ./git-rev-label --version &>/dev/null ;then
    #BUILD_ID=$(./git-rev-label --rev-label | sed -E 's#.*-b([0-9]+).*#\1#')  ## parse from 'master-c22-g234dca-b31'
    #BUILD_ID=$(./git-rev-label --version-npm | sed -E 's#[0-9]+\.[0-9]+\.([0-9]+).*#\1#')  ## parse from '1.2.34'
    prev_ver=( $(./git-rev-label --version-npm | sed 's#\.# #g' ) )
@@ -35,7 +35,7 @@ sed -f <( cat<<'END'
       a ### BEGIN utils.bash ###
       r utils.bash
       a ### END utils.bash ###
-      a 
+      a
       d
    }
 }
@@ -44,10 +44,10 @@ END
 
 VERSION="$(git rev-label --format='$refname-c$count-g$short'-b$BUILD_ID\$_dirty --from=master_before_version_2 )"
 echo $VERSION
-sed -i "s#VERSION=.*#VERSION=$VERSION#" git-rev-label
+sed -Ei "s#^VERSION=[^\s]*#VERSION=$VERSION#" git-rev-label
 
 #VERSION_NPM="$(echo $VERSION | sed -nE 's#.*c([0-9]+)-g(.[0-9a-f]+)-b([0-9]+).*#'$VER_MAJ'.\1.\3#p' )"
 VERSION_NPM="$(git rev-label --format=$VER_MAJ.\$count.$BUILD_ID --from=master_before_version_2 )"
-sed -i "s#VERSION_NPM=.*#VERSION_NPM=$VERSION_NPM#" git-rev-label
+sed -Ei "s#^VERSION_NPM=[^\s]*#VERSION_NPM=$VERSION_NPM#" git-rev-label
 
 chmod +x git-rev-label
