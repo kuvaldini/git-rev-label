@@ -54,7 +54,6 @@ build:
 
 npm_publish:
   stage: deploy
-  image: alpine
   dependencies:
   - build
   variables:
@@ -163,7 +162,6 @@ remove_stale_artifacts:
   except:
   - tags
   dependencies: #none
-  #image: alpine
   variables:
     GIT_CHECKOUT: "false"
     #ToDo GIT_STRATEGY: none  ## use ls-remote
@@ -207,13 +205,14 @@ releases_page:
   - echo -e $'\e[1;37m'"$REV_LABEL"$'\e[0m'
   - COMMIT_MSG="$(git log -1 "origin/$CI_COMMIT_REF_NAME" --format=%B)"
   - COMMIT_MSG="${COMMIT_MSG//$'\n'/\\n}"
-  - DEBUG echo $COMMIT_MSG
+  - DEBUG echo "$COMMIT_MSG"
+  - ESCAPED_COMMIT_MSG="$(echo "$COMMIT_MSG"|sed -E 's,([\"]),\\\1,g')"
   - >
     JSON_REQ='{
       "name": "'"$REV_LABEL"'",
       "tag_name": "'"$REV_LABEL"'",
       "ref": "'"$CI_COMMIT_SHA"'",
-      "description": "'"$COMMIT_MSG"'",
+      "description": "'"$ESCAPED_COMMIT_MSG"'",
       "assets": {
         "links": [
           {
@@ -226,7 +225,7 @@ releases_page:
         ]
       }
     }'
-  - echo "$JSON_REQ" | jq  ## VALIDATE
+  - echo "$JSON_REQ" | jq  || { echo >&2 "Wrong JSON_REQ:\ $JSON_REQ"; false; }  ## VALIDATE
   - >-
     curl --header "PRIVATE-TOKEN: $PRI_TOKEN" 
     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/releases" 
