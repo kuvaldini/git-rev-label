@@ -44,10 +44,10 @@ END
 
 VERSION="$(git rev-label --format='$refname-c$count-g$short'-b$BUILD_ID\$_dirty --from=master_before_version_2 )"
 echo $VERSION
-sed -Ei "s#^VERSION=[^\s]*#VERSION=$VERSION#" git-rev-label
+sed -i "s#VERSION=.*#VERSION=$VERSION#" git-rev-label
 
 #VERSION_NPM="$(echo $VERSION | sed -nE 's#.*c([0-9]+)-g(.[0-9a-f]+)-b([0-9]+).*#'$VER_MAJ'.\1.\3#p' )"
 VERSION_NPM="$(git rev-label --format=$VER_MAJ.\$count.$BUILD_ID --from=master_before_version_2 )"
-sed -Ei "s#^VERSION_NPM=[^\s]*#VERSION_NPM=$VERSION_NPM#" git-rev-label
+sed -i "s#VERSION_NPM=.*#VERSION_NPM=$VERSION_NPM#" git-rev-label
 
 chmod +x git-rev-label
