@@ -1,3 +1,11 @@
+## git-rev-label build_info-c9-g6c59e66-b6ster-cX-gXXXXXXXX-bB
+[git-rev-label.build_info-c9-g6c59e66-b6ster-cX-gXXXXXXXX-bB](git-rev-label.build_info-c9-g6c59e66-b6ster-cX-gXXXXXXXX-bB)  
+
+### Changelog
+Deleted build_info-header/.gitignore, build_info-header/build_info.example.h, build_info-header/build_info.template.h, build_info-header/create-build-info.sh files
+
+---
+
 ## git-rev-label master-cX-gXXXXXXXX-bB
 [git-rev-label.master-cX-gXXXXXXXX-bB](git-rev-label.master-cX-gXXXXXXXX-bB)  
 
