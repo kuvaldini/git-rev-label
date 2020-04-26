@@ -1,3 +1,15 @@
+## git-rev-label master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB
+[git-rev-label.master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB](git-rev-label.master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB)  
+
+### Changelog
+Merge branch 'fix_VERSION' into 'master'
+
+Fix VERSION=master-cX-gXXXXXXXX-bB
+
+See merge request kyb/git-rev-label!26
+
+---
+
 ## git-rev-label master-cX-gXXXXXXXX-bB
 [git-rev-label.master-cX-gXXXXXXXX-bB](git-rev-label.master-cX-gXXXXXXXX-bB)  
 
