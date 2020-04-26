@@ -213,7 +213,7 @@ releases_page:
       "name": "'"$REV_LABEL"'",
       "tag_name": "'"$REV_LABEL"'",
       "ref": "'"$CI_COMMIT_SHA"'",
-      "description": "'"$COMMIT_MSG"'",
+      "description": "'"$(printf %q "$COMMIT_MSG")"'",
       "assets": {
         "links": [
           {
