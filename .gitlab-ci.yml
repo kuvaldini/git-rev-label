@@ -226,7 +226,7 @@ releases_page:
         ]
       }
     }'
-  - echo "$JSON_REQ" | jq  ## VALIDATE
+  - echo "$JSON_REQ" | jq  || { echo >&2 "Wrong JSON_REQ:\ $JSON_REQ"; false; }  ## VALIDATE
   - >-
     curl --header "PRIVATE-TOKEN: $PRI_TOKEN" 
     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/releases" 
