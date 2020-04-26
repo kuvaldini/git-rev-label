@@ -1,3 +1,13 @@
+## git-rev-label master-c7-gac5588d-b6
+[git-rev-label.master-c7-gac5588d-b6](git-rev-label.master-c7-gac5588d-b6)  
+
+### Changelog
+Revert "Merge branch 'fix_VERSION' into 'master'"
+
+This reverts merge request !26
+
+---
+
 ## git-rev-label master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB
 [git-rev-label.master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB](git-rev-label.master-c6-g4bcf5ad-b5ster-cX-gXXXXXXXX-bB)  
 
