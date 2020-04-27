@@ -23,7 +23,7 @@ function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
 function echoerr  { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; }
 function fatalerr { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; exit 1; }
 
-function OnErr {  caller | { read lno file; echoerr ">ERR in $file:$lno" >&2; };  }
+function OnErr { caller | { read lno file; echoerr ">ERR in $file:$lno : $(sed -n ${lno}p $file)" >&2; };  }
 trap OnErr ERR
 
 is_sourced(){
@@ -64,8 +64,8 @@ USAGE:
    git rev-label --format="`cat build_info.template.h`"
    git rev-label --format-file=build_info.template.h
    git rev-label --format-from=version-template.json  ## Alias to --format-file
-   git rev-label --variables [--export]
-   eval $( git rev-label --variables [--export] )
+   git rev-label --variables
+   eval $(git rev-label --variables | sed s,^,export\ ,)  ## Export variables to environment
 
 COMPLEX USE CASE:
  * Fill `build_info.template.h` with branch, tag, commit hash, commits count, dirty status. 
@@ -95,14 +95,20 @@ function --rev-label {
 --version-npm(){ echo $VERSION_NPM; }
 --npm-version(){ --version-npm "$@"; }
 
-function --variables {
-   echoerr "implemented below"
+set_with_warn(){
+   varname=$1
+   shift
+   var_is_set $varname  && echowarn "!!! $varname already set to '${!varname}'. Overriding"
+   declare -g $varname="$@"
 }
--v(){ --variables "$@"; }
---vars(){ --variables "$@"; }
+set_action(){
+   set_with_warn action $1
+}
+
+readonly FULL_LIST="commit short SHORT  long LONG  count  COUNT  dirty _dirty DIRTY _DIRTY  tag branch refname"
 
 ## Unset variables from environment
-unset format install_dir export
+unset format install_dir
 
 while [[ $# > 0 ]] ;do
    case $1 in 
@@ -114,51 +120,36 @@ while [[ $# > 0 ]] ;do
          $1
          exit
          ;;
-      --variables|--vars|-v|--export-variables|--install-link|--install|--install-script|--update|--update-script)  
-         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
-         action=$1 
+      --install-link|--install|--install-script|--update|--update-script)
+         set_action $1
          ;;
       --install-dir=*)
-         var_is_set install_dir  && echowarn "!!! install_dir already set to '$install_dir'. Overriding"
-         install_dir="${1##--install-dir=}"
+         set_with_warn install_dir "${1##--install-dir=}"
          ;;
       --install=*)  ## same as --install --install-dir=path/to/
-         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
-         action=--install
-         install_dir="${1##--install=}"
+         set_action --install
+         set_with_warn install_dir "${1##--install=}"
          ;;
       --install-link=*)  ## same as --install-link --install-dir=path/to/
-         var_is_set action  && echowarn "!!! action already set to '$action'. Overriding"
-         action=--install-link
-         install_dir="${1##--install-link=}"
+         set_action --install-link
+         set_with_warn install_dir "${1##--install-link=}"
          ;;
       --force|-f)
          force=f
          ;;
-      --export|-e)  
-         var_is_set export  && echowarn "!!! export already set to '$export'. Overriding"
-         export=export
+      --variables|--vars|-v)
+         set_action $1
+         format=$(echo "$FULL_LIST" | sed -E 's, *([A-Za-z_]+),\1=\$\1\n,g')
+         --variables(){ default_action; }
+         -v()    { --variables "$@"; }
+         --vars(){ --variables "$@"; }
          ;;
-      --no-export)  
-         var_is_set export  && echowarn "!!! export already set to '$export'. Overriding"
-         export=
-         ;;
-      --format=*)
-         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
-         format="${1##--format=}"
-         ;;
-      --format-file=*)
-         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
-         format="$( cat ${1##--format-file=} )"
-         ;;
-      --format-from)
-         fatalerr "option --format-from requires value"
-         ;;
-      --format-from=*)  ## Alias to --format-file
-         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
-         format="$( cat ${1##--format-from=} )"
-         ;;
+      --format=*)       set_with_warn format "${1##--format=}";;
+      --format-file=*)  set_with_warn format "$(cat ${1##--format-file=})";;
+      --format-from=*)  set_with_warn format "$(cat ${1##--format-from=})";;
+      --format-from)    fatalerr "option --format-from requires value";;
       -x|--trace|--xtrace)
+         # PS4=$'\e[32m+ '
          set -x;
          ;;
       +x|--no-trace|--no-xtrace)
@@ -175,17 +166,28 @@ while [[ $# > 0 ]] ;do
          since="${1##--since=}"
          ;;
       --from=*)  ## passed to git rev-list when calculating $count
-         var_is_set from  && echowarn "!!! 'from' has been already set to '$from'. Overriding"
-         from="${1##--from=}"
+         set_with_warn from  "${1##--from=}"
+         ;;
+      -g|--generate-script|--generate-script=*)
+         set_action --generate-script
+         script_file="${1##--generate-script=}"
+         script_file="${script_file:=/dev/stdout}"
          ;;
       -*|--*) fatalerr "!!! Unknown option $1";;
       *)
-         var_is_set format  && echowarn "!!! format already set to '$format'. Overriding"
-         format="$1"
+         set_with_warn format "$1"
          ;;
    esac
    shift
 done
+
+if test ${DEBUG:-empty} != 'empty' ;then
+   function echodbg { >/dev/stderr echo $'\e[0;36m'"$@"$'\e[0m'; }
+   function DEBUG { "$@" | while read;do echodbg "$REPLY";done ;}
+else
+   function echodbg { :;}
+   function DEBUG { :;}
+fi
 
 ########### MAINTENANCE ACTIONS ###########
 if var_is_set_not_empty action ;then
@@ -216,65 +218,76 @@ if var_is_set_not_empty action ;then
    esac
 fi
 
-########################################################
-########## CHECK CONFIGURATION VARIABLES ###############
-if var_is_set_not_empty export  &&  [[ ${action:-default_action} != --variables ]] ;then
-   echowarn "!!! --[-no]export is only meaningful with --variables."
-fi
-
-format=${format:='$refname-c$count-g$short$_DIRTY'}
-if test -z "$format" ;then
-   echowarn "!!! format is empty."
-fi
-
 #####################################################
 ########## SET git rev-label VARIABLES ##############
 ######### Quintessence (quīnta essentia) ############
-
-##ToDo calculate only requested variables - first of all parse template, detect required vars, calculate them.
-
-GIT=${GIT:=git}
-env_before="$(env)"
-
-export commit=$($GIT rev-parse --short HEAD)
-export short=$commit
-export SHORT=$( echo $short | tr a-z A-Z )
-export long=$($GIT rev-parse HEAD)  #$GIT show-ref -h HEAD
-export LONG=$( echo $long | tr a-z A-Z )
-export count=$($GIT rev-list --count ${since:+--since=$since} --first-parent ${from:+$from..}HEAD )
-export COUNT=$($GIT rev-list --count ${since:+--since=$since}                ${from:+$from..}HEAD )
-
-export dirty=`test -z "$($GIT status --porcelain)" || echo dirty`  # dirty=`$GIT diff --quiet || echo dirty` does not care about untracked
-export _dirty=${dirty:+-$dirty}  # Expands to nothing when $dirty is empty or undefined, and prepends '-' else.
-export DIRTY=$( echo $dirty | tr a-z A-Z )
-export _DIRTY=$( echo $_dirty | tr a-z A-Z )
-
-export tag="$($GIT tag --list --points-at HEAD)"
-export tag_dirty="${tag:+$tag$_dirty}"
-
-if [ -z $($GIT symbolic-ref HEAD -q) ]; then  # Check if HEAD is not a simbolic reference
-   export branch="DETACHED"
-   export refname="${tag:-$branch}"
-else
-   export branch=$($GIT rev-parse --abbrev-ref HEAD)  ## Show only the current branch, no parsing required
-   export refname="$branch"
+format=${format='$refname-c$count-g$short$_DIRTY'}
+if test -z "$format" ;then
+   echowarn "!!! format is empty."
+   exit 0
 fi
-export branch_dirty="$branch$_dirty"
-export refname_dirty="$refname$_dirty"
 
-env_after="$(env)"
---variables(){
-   comm -13 <(sort -u <<<"$env_before") <(sort -u <<<"$env_after")
+resolve_dependancies(){ 
+   sed -E '
+      s,SHORT,short SHORT,g
+      s,short,commit short,g
+      s,LONG,long LONG,g
+      s,_DIRTY,_dirty _DIRTY,g
+      s,DIRTY,dirty DIRTY,g
+      s,_dirty,dirty _dirty,g
+      s,refname,branch tag refname,g
+   '
 }
-
-##ToDo do not expand escaped dolllar sign \$
-export revision=$( echo "$format" | perl -pe's#\$(?:([A-Za-z_]+)|\{([A-Za-z_]+)\})#$ENV{$1//$2}//$&#eg' )  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
+space_newline(){ sed -E 's, +,\n,g' ;}
+variables(){
+   commit=$(git rev-parse --short HEAD)
+   short=$commit
+   SHORT=${short^^}  ## uppercase
+   long=$(git rev-parse HEAD)
+   LONG=${long^^}
+   count=$(git rev-list --count ${since:+--since=$since} --first-parent ${from:+$from..}HEAD)
+   COUNT=$(git rev-list --count ${since:+--since=$since}                ${from:+$from..}HEAD)
+   dirty=$(git diff-index --quiet HEAD -- && git ls-files --others --error-unmatch . >/dev/null || echo dirty)
+   _dirty=${dirty:+-$dirty}  ## Prepends '-' if not empty
+   DIRTY=${dirty^^}
+   _DIRTY=${_dirty^^}
+   branch="$(git rev-parse --abbrev-ref HEAD | sed s,^HEAD$,DETACHED,)"
+   tag="$(git tag --list --points-at HEAD | head -1)"
+   refname=$(if test "$branch" == DETACHED; then echo "${tag:-DETACHED}"; else echo "$branch";fi;)
+}
+get_function_body(){
+   for f ;do
+      declare -f "$f" | sed '1,2d;$d ; s,^    ,,'
+   done
+}
+requested_variables_to_be_evaluated(){
+   ## Calculate only requested variables: parse $format, detect required vars, then calculate required variables.
+   requested_variables=$(echo "$format"| perl -ne '$var="[A-Za-z_][A-Za-z0-9_]+"; print "$1$2 " while m,\$(?:($var)|\{($var)\}),g')
+echodbg requested_variables=$requested_variables
+   if test -z "$requested_variables"
+   then return ;fi
+   variables=$(grep -Fx --fixed-strings --line-regexp --file=<(echo $requested_variables|resolve_dependancies|space_newline)  <(echo $FULL_LIST |space_newline))
+   func_variables_body="$(get_function_body variables)"
+   for varname in $variables ;do
+      echo "$func_variables_body" |egrep "^\s*$varname="
+   done
+   echo "export $requested_variables"
+}
+--generate-script(){
+   echo '#!/usr/bin/env bash -euo pipefail'
+   requested_variables_to_be_evaluated
+   echo "echo ${format@Q} | { $(get_function_body expand_env_vars) ;}"
+}
+expand_env_vars(){
+   perl -pe'$var="[A-Za-z_][A-Za-z0-9_]+"; s,\$(?:($var)|\{($var)\}),$ENV{$1//$2}//$&,eg'  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
+}
 
 ########################################################
 ########## Handle non-maintenance actions ##############
-
 function default_action {
-   echo "$revision"
+   echodbg "requested_variables_to_be_evaluated=$(requested_variables_to_be_evaluated)"
+   eval "$(requested_variables_to_be_evaluated)"
+   echo "$format" | expand_env_vars
 }
 if ! is_sourced ;then
    ${action:-default_action}  # do action if set and __main__ if not
