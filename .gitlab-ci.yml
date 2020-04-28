@@ -282,7 +282,7 @@ docker_image:
   image: docker:stable
   services:
   - docker:dind
-  stage: deploy
+  stage: test
   dependencies:
   - build_rev_label
   only:
