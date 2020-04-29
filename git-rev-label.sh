@@ -11,7 +11,9 @@
 ## or
 ##   git rev-label '$refname-c$count-g$short$_dirty'
 
-set -euo pipefail
+set -eEuo pipefail
+shopt -s inherit_errexit
+shopt -s lastpipe
 
 VERSION=master-cX-gXXXXXXXX-bB
 VERSION_NPM=0.0.0
@@ -23,7 +25,7 @@ function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
 function echoerr  { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; }
 function fatalerr { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; exit 1; }
 
-function OnErr { caller | { read lno file; echoerr ">ERR in $file:$lno : $(sed -n ${lno}p $file)" >&2; };  }
+function OnErr { caller | { read lno file; echoerr ">ERR in $file:$lno,  $(sed -n ${lno}p $file)" >&2; };  }
 trap OnErr ERR
 
 is_sourced(){
@@ -229,13 +231,13 @@ fi
 
 resolve_dependancies(){ 
    sed -E '
-      s,SHORT,short SHORT,g
-      s,short,commit short,g
-      s,LONG,long LONG,g
-      s,_DIRTY,_dirty _DIRTY,g
-      s,DIRTY,dirty DIRTY,g
-      s,_dirty,dirty _dirty,g
-      s,refname,branch tag refname,g
+      s,\bSHORT\b,short SHORT,g
+      s,\bshort\b,commit short,g
+      s,\bLONG\b,long LONG,g
+      s,\b_DIRTY\b,_dirty _DIRTY,g
+      s,\bDIRTY\b,dirty DIRTY,g
+      s,\b_dirty\b,dirty _dirty,g
+      s,\brefname\b,branch tag refname,g
    '
 }
 space_newline(){ sed -E 's, +,\n,g' ;}
@@ -255,6 +257,9 @@ variables(){
    tag="$(git tag --list --points-at HEAD | head -1)"
    refname=$(if test "$branch" == DETACHED; then echo "${tag:-DETACHED}"; else echo "$branch";fi;)
 }
+branch="$(git rev-parse --abbrev-ref HEAD | sed s,^HEAD$,DETACHED,)"
+tag="$(git tag --list --points-at HEAD | head -1)"
+refname=$(if test "$branch" == DETACHED; then echo "${tag:-DETACHED}"; else echo "$branch";fi;)
 get_function_body(){
    for f ;do
       declare -f "$f" | sed '1,2d;$d ; s,^    ,,'
@@ -266,9 +271,10 @@ requested_variables_to_be_evaluated(){
 echodbg requested_variables=$requested_variables
    if test -z "$requested_variables"
    then return ;fi
-   variables=$(grep -Fx --fixed-strings --line-regexp --file=<(echo $requested_variables|resolve_dependancies|space_newline)  <(echo $FULL_LIST |space_newline))
+   needed_variables=$(grep -Fx -f <(echo $requested_variables|resolve_dependancies|space_newline)  <(echo $FULL_LIST|space_newline))
+echodbg needed_variables=$needed_variables
    func_variables_body="$(get_function_body variables)"
-   for varname in $variables ;do
+   for varname in $needed_variables ;do
       echo "$func_variables_body" |egrep "^\s*$varname="
    done
    echo "export $requested_variables"
@@ -278,17 +284,21 @@ echodbg requested_variables=$requested_variables
    requested_variables_to_be_evaluated
    echo "echo ${format@Q} | { $(get_function_body expand_env_vars) ;}"
 }
+
 expand_env_vars(){
    perl -pe'$var="[A-Za-z_][A-Za-z0-9_]+"; s,\$(?:($var)|\{($var)\}),$ENV{$1//$2}//$&,eg'  ## see https://stackoverflow.com/questions/57635730/match-substitute-and-expand-shell-variable-using-perl
 }
 
 ########################################################
 ########## Handle non-maintenance actions ##############
-function default_action {
-   echodbg "requested_variables_to_be_evaluated=$(requested_variables_to_be_evaluated)"
-   eval "$(requested_variables_to_be_evaluated)"
+default_action(){
+   eval $(requested_variables_to_be_evaluated)
    echo "$format" | expand_env_vars
 }
+# --variables(){
+#    export $(get_function_body variables)
+#    echo "$format" | expand_env_vars
+# }
 if ! is_sourced ;then
    ${action:-default_action}  # do action if set and __main__ if not
 fi
