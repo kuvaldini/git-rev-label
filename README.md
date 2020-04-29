@@ -1,3 +1,11 @@
+## git-rev-label master-c10-g852a319-b8
+[git-rev-label.master-c10-g852a319-b8](git-rev-label.master-c10-g852a319-b8)  
+
+### Changelog
+Simplify Dockerfile and build procedure
+
+---
+
 ## git-rev-label master-c8-gfcf2065-b7
 [git-rev-label.master-c8-gfcf2065-b7](git-rev-label.master-c8-gfcf2065-b7)  
 
