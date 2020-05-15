@@ -49,6 +49,9 @@ var_is_unset_or_empty(){
    test -z ${var:+x}
 }
 
+# a=$(false; echo 123;) #|| fatalerr "break"
+# echodbg 123
+# false
 
 function --help {
    echo -n \
@@ -295,10 +298,6 @@ default_action(){
    eval $(requested_variables_to_be_evaluated)
    echo "$format" | expand_env_vars
 }
-# --variables(){
-#    export $(get_function_body variables)
-#    echo "$format" | expand_env_vars
-# }
 if ! is_sourced ;then
    ${action:-default_action}  # do action if set and __main__ if not
 fi
