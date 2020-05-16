@@ -1,3 +1,11 @@
+## git-rev-label master-c12-gfe618a1-b10
+[git-rev-label.master-c12-gfe618a1-b10](git-rev-label.master-c12-gfe618a1-b10)  
+
+### Changelog
+CI: improve retry for step docker_image
+
+---
+
 ## git-rev-label master-c11-geacb6dc-b9
 [git-rev-label.master-c11-geacb6dc-b9](git-rev-label.master-c11-geacb6dc-b9)  
 
