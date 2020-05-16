@@ -290,7 +290,8 @@ docker_image:
   - docker_image
   variables:
     GIT_DEPTH: 1
-  extends: .retry
+  #extends: .retry
+  retry: 2
   script:
   - apk add bash
   - VERSION_NPM="$(./git-rev-label --version-npm -x -D)"
