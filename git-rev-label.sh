@@ -18,7 +18,6 @@ shopt -s lastpipe
 VERSION=master-cX-gXXXXXXXX-bB
 VERSION_NPM=0.0.0
 
-
 function echomsg               { echo $'\e[1;37m'"$@"$'\e[0m'; }
 function echodbg  { >/dev/stderr echo $'\e[0;36m'"$@"$'\e[0m'; }
 function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
@@ -284,6 +283,7 @@ echodbg needed_variables=$needed_variables
 }
 --generate-script(){
    echo '#!/usr/bin/env bash -euo pipefail'
+   echo "## This script was generated with '/usr/local/bin/git-rev-label --generate-script'"
    requested_variables_to_be_evaluated
    echo "echo ${format@Q} | { $(get_function_body expand_env_vars) ;}"
 }
