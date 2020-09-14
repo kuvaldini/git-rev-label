@@ -1,3 +1,13 @@
+## git-rev-label master-c13-g77e014d-b11
+[git-rev-label.master-c13-g77e014d-b11](git-rev-label.master-c13-g77e014d-b11)  
+
+### Changelog
+Add comment line to --generate-script
+
+"## This script was generated with '/usr/local/bin/git-rev-label --generate-script'"
+
+---
+
 ## git-rev-label master-c12-gfe618a1-b10
 [git-rev-label.master-c12-gfe618a1-b10](git-rev-label.master-c12-gfe618a1-b10)  
 
