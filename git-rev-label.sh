@@ -284,6 +284,7 @@ echodbg needed_variables=$needed_variables
 --generate-script(){
    echo '#!/usr/bin/env bash -euo pipefail'
    echo "## This script was generated with 'git-rev-label --generate-script'"
+   echo "## See https://gitlab.com/kyb/git-rev-label"
    requested_variables_to_be_evaluated
    echo "echo ${format@Q} | { $(get_function_body expand_env_vars) ;}"
 }
