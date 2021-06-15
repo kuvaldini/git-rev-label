@@ -14,15 +14,28 @@
 set -eEuo pipefail
 shopt -s inherit_errexit
 shopt -s lastpipe
+shopt -s expand_aliases
 
 VERSION=master-cX-gXXXXXXXX-bB
 VERSION_NPM=0.0.0
 
-function echomsg               { echo $'\e[1;37m'"$@"$'\e[0m'; }
-function echodbg  { >/dev/stderr echo $'\e[0;36m'"$@"$'\e[0m'; }
-function echowarn { >/dev/stderr echo $'\e[0;33m'"$@"$'\e[0m'; }
-function echoerr  { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; }
-function fatalerr { >/dev/stderr echo $'\e[0;31m'"$@"$'\e[0m'; exit 1; }
+function echomsg      { echo $'\e[1;37m'"$@"$'\e[0m'; }
+function echodbg  { >&2 echo $'\e[0;36m'"$@"$'\e[0m'; }
+function echowarn { >&2 echo $'\e[0;33m'WARNING$'\e[0m' "$@"; }
+function echoerr  { >&2 echo $'\e[0;31m'ERROR$'\e[0m' "$@"; }
+function fatalerr { >&2 echoerr "$@"; exit 1; }
+
+if test `uname` == Darwin ;then
+   alias sed=gsed
+   alias grep=ggrep
+   alias find=gfind
+   alias date=gdate
+   alias cp=gcp
+   alias mv=gmv
+   alias ls=gls
+   alias mktemp=gmktemp
+   alias readlink=greadlink
+fi
 
 function OnErr { caller | { read lno file; echoerr ">ERR in $file:$lno,  $(sed -n ${lno}p $file)" >&2; };  }
 trap OnErr ERR
@@ -193,12 +206,15 @@ else
    function DEBUG { :;}
 fi
 
+curl_release(){
+   curl 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -LsSf "$@"
+}
 ########### MAINTENANCE ACTIONS ###########
 if var_is_set_not_empty action ;then
    case "$action" in
       --update|--update-script)
          TEMP=`mktemp`
-         curl 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' -LsSf -o $TEMP
+         curl_release -o $TEMP
          chmod +x $TEMP
          if diff -q "${BASH_SOURCE[0]}" $TEMP &>/dev/null ;then
             echomsg "Already up to date."
@@ -214,13 +230,25 @@ if var_is_set_not_empty action ;then
          ;;
       --install|--install-script)
          install_dir=${install_dir:='/usr/local/bin'}
-         install_dir=$(eval echo $install_dir)
-         cp "${BASH_SOURCE[0]}" "$install_dir/git-rev-label"
+         #install_dir=$(eval echo $install_dir)  ## eval is to expand ~, security leak
+         touch "$install_dir/git-rev-label" 2>&- || 
+            fatalerr "Cannot touch '$install_dir/git-rev-label'. "\
+               "Check if directory exists and you have enough access rights!"
+         if test -n "${BASH_SOURCE[0]:-}" ;then
+            cp "${BASH_SOURCE[0]}" "$install_dir/git-rev-label"
+         else
+            curl_release > "$install_dir/git-rev-label"
+         fi
          chmod +x "$install_dir/git-rev-label"
          exit
          ;;
    esac
 fi
+
+## Sanity check
+var_is_set install_dir && 
+   atalerr "--install_dir should only be used with --install action."
+
 
 #####################################################
 ########## SET git rev-label VARIABLES ##############

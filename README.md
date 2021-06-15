@@ -71,19 +71,18 @@ More info at https://gitlab.com/kyb/git-rev-label
   or create executable file git-rev-label in PATH with the same contents.
 
 ## Install
-#### Manual
+#### Raw without package manager
 ```
-wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && sudo bash ./git-rev-label --install
+curl -fsSL 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' | sudo bash -s -- --install
 ```
 *Warning: sudo under hood.*  
 
-Without sudo, install to `$HOME/bin`:
+##### Manual to `$HOME/bin` without sudo:
 ```
-wget 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' && 
-  bash ./git-rev-label --install --install-dir=$HOME/bin
+curl -fsSL 'https://gitlab.com/kyb/git-rev-label/raw/artifacts/master/git-rev-label' | bash -s -- --install=$HOME/bin
 ```
 
-Make sure `$HOME/bin` is in `$PATH`:
+Then make sure `$HOME/bin` is in `$PATH`:
 * bash  
   ```
   [[ ":$PATH:" != *":$HOME/bin:"* ]] && PATH="$HOME/bin:$PATH"
@@ -96,7 +95,7 @@ Make sure `$HOME/bin` is in `$PATH`:
 #### with [NPM](https://npm.org)
     npm install --global git-rev-label
 
-#### with [Homebrew](https://brew.sh)
+#### with [Homebrew](https://brew.sh) **OUTDATED**
 ```
 brew tap ivakyb/git-rev-label
 brew install git-rev-label
@@ -104,6 +103,14 @@ brew install git-rev-label
 
 
 -----------------------
+
+## Examples
+Take a look into [build_info-header](build_info-header). 
+It shows how `git-rev-label` is used to generate C header file `build_info.h` 
+with information about version extracted from Git.
+
+
+
 -----------------------
 
 
