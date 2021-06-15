@@ -1,3 +1,13 @@
+## git-rev-label master-c16-g154e93e-b14
+[git-rev-label.master-c16-g154e93e-b14](git-rev-label.master-c16-g154e93e-b14)  
+
+### Changelog
+manual install in one line, fix utils on mac with g-prefix
+
+Signed-off-by: kyb <i.kyb@ya.ru>
+
+---
+
 ## git-rev-label master-c15-g1edddf7-b13
 [git-rev-label.master-c15-g1edddf7-b13](git-rev-label.master-c15-g1edddf7-b13)  
 
